@@ -9,10 +9,19 @@ class Client(object):
     def __init__(self, verbose):
         self.verbose = verbose
 
-    def find(self, query):
+    def find(self, query, keyword="All"):
         response = self._query(query)
         data = response.json()
-        return data['results']
+        if keyword == "All":
+            # return full list of dictionary
+            return data['results']
+        else:
+            # return specific dictionary entry (exact match)
+            if any([keyword in result.keys() for result in data['results']]):
+                return [{keyword: result[keyword]} for result in data['results'] if keyword in result.keys()]
+            # return specific dictionary entry (partial match)
+            elif any([any([keyword in key for key in result.keys()]) for result in data['results']]):
+                return [{key: result[key] for key in result.keys() if keyword in key} for result in data['results']]
 
     def download(self, query, csv=False, root=False, yaml=False, yoda=False):
         results = self.find(query)

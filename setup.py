@@ -13,6 +13,7 @@ setup(
     install_requires=[
         'click',
         'requests',
+        're',
     ],
     entry_points={
         'console_scripts': [

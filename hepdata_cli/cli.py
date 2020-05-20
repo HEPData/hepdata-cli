@@ -14,9 +14,10 @@ def cli(ctx, verbose=False):
 
 @cli.command()
 @click.argument('query')
+@click.option('-kw', "--keyword", default="All", type=str)
 @click.pass_obj
-def find(client, query):
-    click.echo(client.find(query))
+def find(client, query, keyword):
+    click.echo(client.find(query, keyword))
 
 
 @cli.command()
