@@ -13,11 +13,10 @@ setup(
     install_requires=[
         'click',
         'requests',
-        're',
     ],
     entry_points={
         'console_scripts': [
-            'hepdata = hepdata_cli.cli:cli',
+            'hepdata-cli = hepdata_cli.cli:cli',
         ],
     },
 )
