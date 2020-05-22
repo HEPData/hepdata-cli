@@ -2,7 +2,7 @@
 
 import click
 
-from api import Client
+from .api import Client
 
 
 @click.group()

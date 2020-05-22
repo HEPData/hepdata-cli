@@ -15,7 +15,7 @@ $ pip install -e -user ~/path/to/hepdata-cli
 
 ```code
 $ hepdata-cli [-v/--verbose] find [TEXT] [-kw/--keyword TEXT] [-i/--ids IDTYPE]
-$ hepdata-cli [-v/-verbose] download [IDS] [-f/--file-format FORMAT] [-i/--ids IDTYPE] [-t/--table TABLE-NUMBER]
+$ hepdata-cli [-v/--verbose] download [IDS] [-f/--file-format FORMAT] [-i/--ids IDTYPE] [-t/--table TABLE-NUMBER]
 ```
 
 The argument ```[-kw/--keyword TEXT]``` filters the search result dictionary for specific keywords.
