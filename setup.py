@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 
+from .hepdata_cli.version import __version__
+
 from setuptools import setup, find_packages
 
 setup(
     name='hepdata-cli',
-    version='0.1',
+    version=__version__,
     author='Giuseppe De Laurentis',
     author_email='g.dl@hotmail.it',
     description='HEPData command-line interface',

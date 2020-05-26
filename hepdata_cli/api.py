@@ -1,13 +1,18 @@
 # -*- coding: utf-8 -*-
 
+from .version import __version__
+
 import requests
 import re
+import os
+import errno
 
 
 class Client(object):
 
-    def __init__(self, verbose=False):
+    def __init__(self, verbose=False, version=False):
         self.verbose = verbose
+        self.version = __version__
 
     def find(self, query, keyword=None, ids=None):
         response = self._query(query)
@@ -35,19 +40,31 @@ class Client(object):
                     return " ".join([[str(result[key]).replace("arXiv:", "") for key in result.keys() if keyword in key][0]
                                      if len([result[key] for key in result.keys() if keyword in key]) > 0 else "" for result in data['results']])
 
-    def download(self, id_list, file_format=None, ids=None, table=None):
-        assert len(id_list) > 0, 'Ids are required for download.'
-        assert file_format in ['csv', 'root', 'yaml', 'yoda', 'json'], "allowed formats are: csv, root, yaml, yoda and json."
-        assert ids in ['inspire', 'hepdata'], "allowed ids are: inspire and hepdata."
-        if table is None:
-            params = {'format': file_format}
-        else:
-            params = {'format': file_format, 'table': "Table" + str(table)}
-        for id_entry in id_list:
-            url = requests.get('https://www.hepdata.net/record/' + ('ins' if ids == 'inspire' else '') + id_entry, params=params).url
+    def download(self, id_list, file_format=None, ids=None, table_name='', download_dir=os.path.expanduser('~') + '/Downloads'):
+        urls = self.build_urls(id_list, file_format, ids, table_name)
+        for url in urls:
             if self.verbose is True:
                 print("Downloading: " + url)
-            download_url(url)
+            download_url(url, download_dir)
+
+    def fetch_names(self, id_list, ids=None):
+        urls = self.build_urls(id_list, 'json', ids, '')
+        table_names = []
+        for url in urls:
+            json_dict = requests.get(url).json()
+            table_names += [[data_table['processed_name'] for data_table in json_dict['data_tables']]]
+        return table_names
+
+    def build_urls(self, id_list, file_format, ids, table_name):
+        assert len(id_list) > 0, 'Ids are required.'
+        assert file_format in ['csv', 'root', 'yaml', 'yoda', 'json'], "allowed formats are: csv, root, yaml, yoda and json."
+        assert ids in ['inspire', 'hepdata'], "allowed ids are: inspire and hepdata."
+        if table_name == '':
+            params = {'format': file_format}
+        else:
+            params = {'format': file_format, 'table': table_name}
+        urls = [requests.get('https://www.hepdata.net/record/' + ('ins' if ids == 'inspire' else '') + id_entry, params=params).url for id_entry in id_list]
+        return urls
 
     def _query(self, query):
         url = 'https://www.hepdata.net/search/?q=' + query + "&format=json"
@@ -57,14 +74,25 @@ class Client(object):
         return response
 
 
-def download_url(url):
+def mkdir(directory):
+    if not os.path.exists(directory):
+        try:
+            os.makedirs(directory)
+        except OSError as exc:   # Guard against race condition (directory created between os.path.exists and os.makedirs)
+            if exc.errno != errno.EEXIST:
+                raise Exception
+
+
+def download_url(url, download_dir):
     assert is_downloadable(url), "Given url is not downloadable: {}".format(url)
     response = requests.get(url, allow_redirects=True)
     if url[-4:] == 'json':
         filename = 'HEPData-' + url.split('/')[-1].split("?")[0] + ".json"
     else:
         filename = getFilename_fromCd(response.headers.get('content-disposition'))
-    open(filename, 'wb').write(response.content)
+    filepath = download_dir + "/" + filename
+    mkdir(os.path.dirname(filepath))
+    open(filepath, 'wb').write(response.content)
 
 
 def getFilename_fromCd(cd):
