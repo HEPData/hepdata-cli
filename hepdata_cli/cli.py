@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import click
+import os
 
 from .version import __version__
 from .api import Client
@@ -28,9 +29,10 @@ def find(client, query, keyword, ids):
 @click.option('-f', '--file-format', required=True, type=str, help='Specify file format (csv, root, yaml, yoda, or json) to be downloaded.')
 @click.option('-i', '--ids', required=True, type=str, help='Specify which ids (hepdata or inspire) are given.')
 @click.option('-t', '--table-name', default='', type=str, help='Specify table to be downloaded.')
+@click.option('-d', '--download_dir', default=os.path.expanduser('~') + '/Downloads', type=str, help='Specify where to download the files..')
 @click.pass_obj
-def download(client, id_list, file_format, ids, table_name):
-    client.download(id_list, file_format=file_format, ids=ids, table_name=table_name)
+def download(client, id_list, file_format, ids, table_name, download_dir):
+    client.download(id_list, file_format=file_format, ids=ids, table_name=table_name, download_dir=download_dir)
 
 
 @cli.command()

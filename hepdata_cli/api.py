@@ -8,37 +8,55 @@ import os
 import errno
 
 
+max_matches = 10000
+matches_per_page = 25
+
+
 class Client(object):
 
     def __init__(self, verbose=False, version=False):
         self.verbose = verbose
         self.version = __version__
+        # check service availability
+        response = requests.get('https://www.hepdata.net/ping')
+        response.raise_for_status()
 
-    def find(self, query, keyword=None, ids=None):
-        response = self._query(query)
-        data = response.json()
-        if keyword is None and ids is None:
-            # return full list of dictionary
-            return data['results']
+    def find(self, query, keyword=None, ids=None, max_matches=max_matches):
+        find_results = []
+        for counter in range(int(max_matches / matches_per_page)):
+            counter += 1
+            response = self._query(query, page=counter)
+            data = response.json()
+            if len(data['results']) == 0:
+                break
+            elif keyword is None and ids is None:
+                # return full list of dictionary
+                find_results += data['results']
+            else:
+                assert ids in [None, "arxiv", "inspire", "hepdata", "id"], "allowd ids are: arxiv, inspire and hepdata"
+                if ids is not None:
+                    if ids == "hepdata":
+                        ids = "id"
+                    keyword = ids
+                # return specific dictionary entry (exact match)
+                if any([keyword in result.keys() for result in data['results']]):
+                    if ids is None:
+                        find_results += [{keyword: result[keyword]} for result in data['results'] if keyword in result.keys()]
+                    else:
+                        find_results += [str(result[keyword]).replace("arXiv:", "") for result in data['results'] if keyword in result.keys()]
+                # return specific dictionary entry (partial match)
+                elif any([any([keyword in key for key in result.keys()]) for result in data['results']]):
+                    if ids is None:
+                        find_results += [{key: result[key] for key in result.keys() if keyword in key} for result in data['results']]
+                    else:
+                        find_results += [[str(result[key]).replace("arXiv:", "") for key in result.keys() if keyword in key][0]
+                                         if len([result[key] for key in result.keys() if keyword in key]) > 0 else "" for result in data['results']]
+            if len(data['results']) < matches_per_page:
+                break
+        if ids is None:
+            return find_results
         else:
-            assert ids in [None, "arxiv", "inspire", "hepdata"], "allowd ids are: arxiv, inspire and hepdata"
-            if ids is not None:
-                if ids == "hepdata":
-                    ids = "id"
-                keyword = ids
-            # return specific dictionary entry (exact match)
-            if any([keyword in result.keys() for result in data['results']]):
-                if ids is None:
-                    return [{keyword: result[keyword]} for result in data['results'] if keyword in result.keys()]
-                else:
-                    return " ".join([str(result[keyword]).replace("arXiv:", "") for result in data['results'] if keyword in result.keys()])
-            # return specific dictionary entry (partial match)
-            elif any([any([keyword in key for key in result.keys()]) for result in data['results']]):
-                if ids is None:
-                    return [{key: result[key] for key in result.keys() if keyword in key} for result in data['results']]
-                else:
-                    return " ".join([[str(result[key]).replace("arXiv:", "") for key in result.keys() if keyword in key][0]
-                                     if len([result[key] for key in result.keys() if keyword in key]) > 0 else "" for result in data['results']])
+            return ' '.join(find_results)
 
     def download(self, id_list, file_format=None, ids=None, table_name='', download_dir=os.path.expanduser('~') + '/Downloads'):
         urls = self.build_urls(id_list, file_format, ids, table_name)
@@ -66,8 +84,8 @@ class Client(object):
         urls = [requests.get('https://www.hepdata.net/record/' + ('ins' if ids == 'inspire' else '') + id_entry, params=params).url for id_entry in id_list]
         return urls
 
-    def _query(self, query):
-        url = 'https://www.hepdata.net/search/?q=' + query + "&format=json"
+    def _query(self, query, page):
+        url = 'https://www.hepdata.net/search/?q=' + query + "&format=json&page=" + str(page)
         response = requests.get(url)
         if self.verbose is True:
             print("Looking up: " + url)

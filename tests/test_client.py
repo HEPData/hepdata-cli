@@ -18,6 +18,7 @@ test_find_arguments = [
     ('reactions:"P P--> LQ LQ"', 'arxiv', None),
     ('reactions:"P P--> LQ LQ"', None, 'arxiv'),
     ('reactions:"P P--> LQ LQ"', None, 'hepdata'),
+    ('reactions:"P P"', None, 'hepdata'),
 ]
 
 test_download_arguments = [
