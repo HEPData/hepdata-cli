@@ -8,7 +8,7 @@ Command line interface (CLI) and application program interface (API) to allow us
 
 ```code
 $ git clone https://github.com/HEPData/hepdata-cli.git
-$ pip install -e --user ~/path/to/hepdata-cli
+$ pip install -e ~/path/to/hepdata-cli
 ```
 
 ## Usage

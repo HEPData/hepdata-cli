@@ -3,6 +3,7 @@
 from .version import __version__
 
 import requests
+import tarfile
 import re
 import os
 import errno
@@ -13,8 +14,14 @@ matches_per_page = 25
 
 
 class Client(object):
+    """API class to handle all queries to HEPData."""
 
-    def __init__(self, verbose=False, version=False):
+    def __init__(self, verbose=False):
+        """
+        Initialises the client object.
+
+        :param verbose: prints additional output.
+        """
         self.verbose = verbose
         self.version = __version__
         # check service availability
@@ -22,6 +29,15 @@ class Client(object):
         response.raise_for_status()
 
     def find(self, query, keyword=None, ids=None, max_matches=max_matches):
+        """
+        Search function for the hepdata database. Calls hepdata.net search function.
+
+        :param query: string passed to hepdata.net search function. See advanced search tips at hepdata.net.
+        :param keyword: filters return dictionary for given keyword. Exact match is first attempted, otherwise partial match is accepted.
+        :param ids: acceps one of ("arxiv", "inspire", "hepdata").
+
+        :return: returns a list of (filtered if 'keyword' is specified) dictionaries for the search matches. If 'ids' is specified it instead returns a list of ids as a string.
+        """
         find_results = []
         for counter in range(int(max_matches / matches_per_page)):
             counter += 1
@@ -59,21 +75,37 @@ class Client(object):
             return ' '.join(find_results)
 
     def download(self, id_list, file_format=None, ids=None, table_name='', download_dir=os.path.expanduser('~') + '/Downloads'):
-        urls = self.build_urls(id_list, file_format, ids, table_name)
+        """
+        Downloads from the hepdata database the specified records.
+
+        :param id_list: list of ids to download. These can be obtained by the find function.
+        :param file_format: accepts one of ('csv', 'root', 'yaml', 'yoda', 'json'). Specified the download file format.
+        :param ids: accepts one of ('inspire', 'hepdata'). It specifies what type of ids have been passes.
+        :param table_name: restricts download to specific tables.
+        :param download_dir: defaults to ~/Downloads. Speficies where to download the files.
+        """
+        urls = self._build_urls(id_list, file_format, ids, table_name)
         for url in urls:
             if self.verbose is True:
                 print("Downloading: " + url)
             download_url(url, download_dir)
 
     def fetch_names(self, id_list, ids=None):
-        urls = self.build_urls(id_list, 'json', ids, '')
+        """
+        Returns the names of the tables in the provided records. These are the possible inputs of table_name parameter in download function.
+
+        :param id_list: list of id of records of which to return table names.
+        :param ids: accepts one of ('inspire', 'hepdata'). It specifies what type of ids have been passes.
+        """
+        urls = self._build_urls(id_list, 'json', ids, '')
         table_names = []
         for url in urls:
             json_dict = requests.get(url).json()
             table_names += [[data_table['processed_name'] for data_table in json_dict['data_tables']]]
         return table_names
 
-    def build_urls(self, id_list, file_format, ids, table_name):
+    def _build_urls(self, id_list, file_format, ids, table_name):
+        """Builds urls for download and fetch_names, given the specified parameters."""
         assert len(id_list) > 0, 'Ids are required.'
         assert file_format in ['csv', 'root', 'yaml', 'yoda', 'json'], "allowed formats are: csv, root, yaml, yoda and json."
         assert ids in ['inspire', 'hepdata'], "allowed ids are: inspire and hepdata."
@@ -85,6 +117,7 @@ class Client(object):
         return urls
 
     def _query(self, query, page):
+        """Builds the search query passed to hepdata.net."""
         url = 'https://www.hepdata.net/search/?q=' + query + "&format=json&page=" + str(page)
         response = requests.get(url)
         if self.verbose is True:
@@ -102,15 +135,28 @@ def mkdir(directory):
 
 
 def download_url(url, download_dir):
+    """Download file and if necessary extract it."""
     assert is_downloadable(url), "Given url is not downloadable: {}".format(url)
     response = requests.get(url, allow_redirects=True)
     if url[-4:] == 'json':
         filename = 'HEPData-' + url.split('/')[-1].split("?")[0] + ".json"
     else:
         filename = getFilename_fromCd(response.headers.get('content-disposition'))
+    if filename[0] == '"' and filename[-1] == '"':
+        filename = filename[1:-1]
     filepath = download_dir + "/" + filename
     mkdir(os.path.dirname(filepath))
     open(filepath, 'wb').write(response.content)
+    if filepath.endswith("tar.gz"):
+        tar = tarfile.open(filepath, "r:gz")
+        tar.extractall(path=os.path.dirname(filepath))
+        tar.close()
+        os.remove(filepath)
+    elif filepath.endswith("tar"):
+        tar = tarfile.open(filepath, "r:")
+        tar.extractall(path=os.path.dirname(filepath))
+        tar.close()
+        os.remove(filepath)
 
 
 def getFilename_fromCd(cd):
