@@ -5,6 +5,8 @@ cache: pip
 python:
   - '2.7'
   - '3.6'
+  - '3.7'
+  - '3.8'
 
 before_install:
   - travis_retry pip install --upgrade pip setuptools wheel coveralls
@@ -24,7 +26,7 @@ deploy:
   user: __token__
   password:
     secure: "bGOd4oFF0AatJ9zqiJFcZSvQXGh7E4oKgPrtdfHqRI+4zXWl8XSC1I/s3K53J3TndIch5jpep/piFslgKZulBFdfu8cp8/chcF6iFp7Dc0LvwpZ39OBtycNKpeB1GQlwCAtY1ffKTqlvlVkANLHGH8/cUtT51LzLy63EUfdFxTUY2zCC4hQsOyMYqAnSo7ydzbjaz1WJwl8uwYaKqA2w7cFaSQztFoh9nxqXYcjNpdrO++hZBtXfawsqM7SHOOmEIXUEZJNnDMKQCUOFOqKtsJkYVQZi0t5LZ/tiVcDLR+egPGhR+5JxGS7DTyQZrwdRJahLD1wvgTeiIVUFyYdY4zz+1f6dST7Vucpwzs3VJIY9HQIOH0fmeVuIAnmJOiVO3BIcTNBXXpy5kc/K7dbLLn/nW8BaT8itxvzqOYLKC51PR5jOBBbII09bKBtcH7AN1NC0crMZIScDwL3xl601JnNhUYPGl2zeaatK5bx/JHMDD4K+lJTV51agi2eIrrE9lrPivh0PVp8mLVUrpBa7Ej0ZxIzAxsiPtgGsC23FzWo0j1mg+4slaso+Vz3fP7RASouz5sxryCVn+keaXGmA49N0E0Bp5+yiL+pfpRI1R6vpTr0CD6QRCo5x8LvxviYwmSMJiX/w0jegs8CsY57EYAafoEKcWnawQXRHEhpbsOY="
-    distributions: sdist bdist_wheel
-    on:
-      tags: true
-      repo: HEPData/hepdata-cli
+  distributions: sdist bdist_wheel
+  on:
+    tags: true
+    repo: HEPData/hepdata-cli
