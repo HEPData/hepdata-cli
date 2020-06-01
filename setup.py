@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+"""CLI and API to allow users to search and download from HEPData"""
+
 import os
 
 from setuptools import setup, find_packages
@@ -11,18 +13,19 @@ with open(os.path.join('hepdata_cli', 'version.py'), 'rt') as fp:
     version = g['__version__']
 
 
-test_requirements = [
-    'click',
-    'requests',
-]
-
-
 install_requirements = [
     'click',
     'requests',
+]
+
+test_requirements = [
     'pytest',
     'pytest-cov',
 ]
+
+extras_require = {
+    'tests': test_requirements,
+}
 
 
 setup(
@@ -30,11 +33,16 @@ setup(
     version=version,
     author='Giuseppe De Laurentis',
     author_email='g.dl@hotmail.it',
-    description='HEPData command-line interface',
+    description=__doc__,
+    keywords='hepdata cli api',
+    url='https://github.com/HEPData/hepdata-cli',
     packages=find_packages(),
-    include_package_data=True,
-    tests_require=test_requirements,
+    zip_safe=False,
+    platforms='any',
+    license='GPLv3',
     install_requires=install_requirements,
+    tests_require=test_requirements,
+    extras_require=extras_require,
     entry_points={
         'console_scripts': [
             'hepdata-cli = hepdata_cli.cli:cli',

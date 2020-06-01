@@ -1,19 +1,45 @@
+[![Travis Status](https://www.travis-ci.org/HEPData/hepdata-cli.svg?branch=master)](https://www.travis-ci.org/HEPData/hepdata-cli)
+[![Coveralls Status](https://coveralls.io/repos/github/HEPData/hepdata-cli/badge.svg?branch=master)](https://coveralls.io/github/HEPData/hepdata-cli?branch=master)
+[![License](https://img.shields.io/github/license/HEPData/hepdata-cli.svg)](https://github.com/HEPData/hepdata-cli/blob/master/LICENSE.txt)
+[![GitHub Releases](https://img.shields.io/github/release/hepdata/hepdata-cli.svg?maxAge=2592000)](https://github.com/HEPData/hepdata-cli/releases)
+[![PyPI Version](https://img.shields.io/pypi/v/hepdata-cli)](https://pypi.org/project/hepdata-cli/)
+[![GitHub Issues](https://img.shields.io/github/issues/hepdata/hepdata-cli.svg?maxAge=2592000)](https://github.com/HEPData/hepdata-cli/issues)
+
+
 # HEPData-CLI
 
 ## About
 
-Command line interface (CLI) and application program interface (API) to allow users to search, download, and upload to HEPData.
+Command line interface (CLI) and application program interface (API) to allow users to search and download from HEPData.
 
-## Installation (temporary)
+The code is compatible with both Python 2 and Python 3.
+
+## Installation (for users)
+
+Install from [PyPI](https://pypi.org/) (coming soon):
+
+```code
+$ pip install --user hepdata-cli
+$ hepdata-cli --help
+```
+
+## Installation (for developers)
+
+Install from GitHub in a [virtual environment](https://docs.python.org/3/tutorial/venv.html):
 
 ```code
 $ git clone https://github.com/HEPData/hepdata-cli.git
-$ pip install -e ~/path/to/hepdata-cli
+$ cd hepdata-cli
+$ python3 -m venv ~/venv/hepdata-cli
+$ source ~/venv/hepdata-cli/bin/activate
+(hepdata-cli) $ pip install -e .[tests]
+(hepdata-cli) $ hepdata-cli --help
+(hepdata-cli) $ pytest --cov=hepdata_cli
 ```
 
 ## Usage
 
-You can use HEPData-CLI both as a comand line interface (CLI) to search and download records from the hepdata database, or as a python library to perform the same operations via its application program interface (API).
+You can use HEPData-CLI both as a command-line interface (CLI) to search and download records from the HEPData database, or as a Python library to perform the same operations via its application program interface (API).
 
 
 # CLI
@@ -25,7 +51,7 @@ $ hepdata-cli [--verbose] download [IDS] [-f/--file-format FORMAT] [-i/--ids IDT
 $ hepdata-cli [--verbose] fetch-names [IDS] [-i/--ids IDTYPE]
 ```
 
-The command ```find``` searches the [hepdata](https://www.hepdata.net/) database for matches of ```TEXT```. The advanced search syntax from the website can be used.
+The command ```find``` searches the [HEPData](https://www.hepdata.net/) database for matches of ```TEXT```. The advanced search syntax from the website can be used.
 
 The command ```download``` downloads records from the database (see options below).
 
@@ -40,9 +66,9 @@ The argument  ```[-f/--file-format FORMAT]``` accepts ```FORMAT``` equal to ```c
 In the first four cases a .tar.gz archive is downloaded, in the last case a .json file is downloaded.
 
 The argument  ```[-t/--table TABLE-NUMBER]``` accepts a number as input.
-In this case only the speficied table is download as a .csv, .root, .yaml or .yoda file.
+In this case only the specified table is download as a .csv, .root, .yaml or .yoda file.
 
-The ```hepdata-cli download/fetch-names``` and ```hepdata-cli find``` commands can be concatenated, if a ```IDTYPE``` is speficied for ```find```.
+The ```hepdata-cli download/fetch-names``` and ```hepdata-cli find``` commands can be concatenated, if a ```IDTYPE``` is specified for ```find```.
 It is also possible to concatenate ```arxiv download```, form [pypi/arxiv-cli](https://pypi.org/project/arxiv-cli/), with ```hepdata-cli find```, if ```arxiv``` is used as ```IDTYPE```.
 
 # API
@@ -86,7 +112,7 @@ or equivalently
 client.find('reactions:"P P--> LQ LQ"', keyword='year')
 ```
 
-matches a four entries and returns their publication years, as a dictionary.
+matches four entries and returns their publication years, as a dictionary.
 
 ### Example 3 - search for ids of records:
 
@@ -100,7 +126,7 @@ or equivalently
 client.find('reactions:"P P--> LQ LQ"', ids='hepdata')
 ```
 
-matches a four entries and returns their hepdata ids, as a plain list.
+matches four entries and returns their hepdata ids, as a plain list.
 
 ### Example 4 - concatenate search with download using inspire ids:
 
@@ -119,10 +145,10 @@ downloads four csv.tar.gz archives.
 
 ### Example 5 - concatenate search with download from arxiv-cli:
 
-This example requires arxiv-cli to be installed, which is easily done via:
+This example requires [arxiv-cli](https://github.com/jacquerie/arxiv-cli) to be installed, which is easily done via:
 
 ```code
-$ pip install arxiv-cli
+$ pip install --user arxiv-cli
 ```
 
 Then,
