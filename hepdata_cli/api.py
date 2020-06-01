@@ -74,7 +74,7 @@ class Client(object):
         else:
             return ' '.join(find_results)
 
-    def download(self, id_list, file_format=None, ids=None, table_name='', download_dir=os.path.expanduser('~') + '/Downloads'):
+    def download(self, id_list, file_format=None, ids=None, table_name='', download_dir='./hepdata-downloads'):
         """
         Downloads from the hepdata database the specified records.
 

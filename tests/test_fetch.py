@@ -33,8 +33,6 @@ def test_api_fetch_names(id_list, ids):
 @pytest.mark.parametrize("id_list, ids", test_fetch_names_arguments)
 def test_cli_fetch_names(id_list, ids):
     runner = CliRunner()
-    if sys.version_info.major == 2:
-        result = runner.invoke(cli, ['fetch_names'] + id_list + ['-i', ids])
-    elif sys.version_info.major == 3:
-        result = runner.invoke(cli, ['fetch-names'] + id_list + ['-i', ids])
-    assert result.exit_code == 0
+    result1 = runner.invoke(cli, ['fetch_names'] + id_list + ['-i', ids])
+    result2 = runner.invoke(cli, ['fetch-names'] + id_list + ['-i', ids])
+    assert (result1.exit_code == 0 or result2.exit_code == 0)

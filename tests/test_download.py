@@ -30,9 +30,26 @@ def test_api_download(id_list, file_format, ids, table):
     client = Client(verbose=True)
     client.download(id_list, file_format, ids, table, test_download_dir)
     assert len(os.listdir(test_download_dir)) > 0
-    # cleanup
-    for filename in os.listdir(test_download_dir):
-        file_path = os.path.join(test_download_dir, filename)
+    cleanup(test_download_dir)
+
+
+# cli testing
+
+@pytest.mark.parametrize("id_list, file_format, ids, table", test_download_arguments)
+def test_cli_download(id_list, file_format, ids, table):
+    test_download_dir = './.pytest_downloads/'
+    mkdir(test_download_dir)
+    assert len(os.listdir(test_download_dir)) == 0
+    runner = CliRunner()
+    result = runner.invoke(cli, ['download'] + id_list + ['-f', file_format, '-i', ids, '-t', table, '-d', test_download_dir])
+    assert result.exit_code == 0
+    assert len(os.listdir(test_download_dir)) > 0
+    cleanup(test_download_dir)
+
+
+def cleanup(directory):
+    for filename in os.listdir(directory):
+        file_path = os.path.join(directory, filename)
         try:
             if os.path.isfile(file_path) or os.path.islink(file_path):
                 os.unlink(file_path)
@@ -40,14 +57,5 @@ def test_api_download(id_list, file_format, ids, table):
                 shutil.rmtree(file_path)
         except Exception as e:
             print('Failed to delete %s. Reason: %s' % (file_path, e))
-    assert len(os.listdir(test_download_dir)) == 0
-    os.rmdir(test_download_dir)
-
-
-# cli testing
-
-@pytest.mark.parametrize("id_list, file_format, ids, table", test_download_arguments)
-def test_cli_download(id_list, file_format, ids, table):
-    runner = CliRunner()
-    result = runner.invoke(cli, ['download'] + id_list + ['-f', file_format, '-i', ids, '-t', table])
-    assert result.exit_code == 0
+    assert len(os.listdir(directory)) == 0
+    os.rmdir(directory)
