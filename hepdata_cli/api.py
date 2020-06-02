@@ -8,9 +8,26 @@ import re
 import os
 import errno
 
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
 
-max_matches = 10000
-matches_per_page = 25
+SITE_URL = "https://www.hepdata.net"
+MAX_MATCHES = 10000
+MATCHES_PER_PAGE = 10
+
+retry_strategy = Retry(total=5,
+                       backoff_factor=2,
+                       status_forcelist=[429, 500, 502, 503, 504],
+                       method_whitelist=["GET", "POST"])
+adapter = HTTPAdapter(max_retries=retry_strategy)
+
+
+def requests_retry(func, *args, **kwargs):
+    with requests.Session() as session:
+        session.mount("https://", adapter)
+        response = getattr(session, func)(*args, **kwargs)
+        response.raise_for_status()
+    return response
 
 
 class Client(object):
@@ -25,10 +42,9 @@ class Client(object):
         self.verbose = verbose
         self.version = __version__
         # check service availability
-        response = requests.get('https://www.hepdata.net/ping')
-        response.raise_for_status()
+        requests_retry('get', SITE_URL + '/ping')
 
-    def find(self, query, keyword=None, ids=None, max_matches=max_matches):
+    def find(self, query, keyword=None, ids=None, max_matches=MAX_MATCHES, matches_per_page=MATCHES_PER_PAGE):
         """
         Search function for the hepdata database. Calls hepdata.net search function.
 
@@ -41,7 +57,7 @@ class Client(object):
         find_results = []
         for counter in range(int(max_matches / matches_per_page)):
             counter += 1
-            response = self._query(query, page=counter)
+            response = self._query(query, page=counter, size=matches_per_page)
             data = response.json()
             if len(data['results']) == 0:
                 break
@@ -100,7 +116,8 @@ class Client(object):
         urls = self._build_urls(id_list, 'json', ids, '')
         table_names = []
         for url in urls:
-            json_dict = requests.get(url).json()
+            response = requests_retry('get', url)
+            json_dict = response.json()
             table_names += [[data_table['processed_name'] for data_table in json_dict['data_tables']]]
         return table_names
 
@@ -113,15 +130,15 @@ class Client(object):
             params = {'format': file_format}
         else:
             params = {'format': file_format, 'table': table_name}
-        urls = [requests.get('https://www.hepdata.net/record/' + ('ins' if ids == 'inspire' else '') + id_entry, params=params).url for id_entry in id_list]
+        urls = [requests_retry('get', SITE_URL + '/record/' + ('ins' if ids == 'inspire' else '') + id_entry, params=params).url for id_entry in id_list]
         return urls
 
-    def _query(self, query, page):
+    def _query(self, query, page, size):
         """Builds the search query passed to hepdata.net."""
-        url = 'https://www.hepdata.net/search/?q=' + query + "&format=json&page=" + str(page)
-        response = requests.get(url)
+        url = SITE_URL + '/search/?q=' + query + '&format=json&page=' + str(page) + '&size=' + str(size)
+        response = requests_retry('get', url)
         if self.verbose is True:
-            print("Looking up: " + url)
+            print('Looking up: ' + url)
         return response
 
 
@@ -137,7 +154,7 @@ def mkdir(directory):
 def download_url(url, download_dir):
     """Download file and if necessary extract it."""
     assert is_downloadable(url), "Given url is not downloadable: {}".format(url)
-    response = requests.get(url, allow_redirects=True)
+    response = requests_retry('get', url, allow_redirects=True)
     if url[-4:] == 'json':
         filename = 'HEPData-' + url.split('/')[-1].split("?")[0] + ".json"
     else:
@@ -171,7 +188,7 @@ def getFilename_fromCd(cd):
 
 def is_downloadable(url):
     """Does the url contain a downloadable resource?"""
-    header = requests.head(url, allow_redirects=True).headers
+    header = requests_retry('head', url, allow_redirects=True).headers
     content_type = header.get('content-type')
     if 'html' in content_type.lower():
         return False
