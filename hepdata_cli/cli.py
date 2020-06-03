@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import click
-import os
 
 from .version import __version__
 from .api import Client
@@ -45,3 +44,14 @@ def download(client, id_list, file_format, ids, table_name, download_dir):
 def fetch_names(client, id_list, ids):
     """CLI interface to API client.fetch_names function."""
     click.echo(client.fetch_names(id_list, ids=ids))
+
+
+@cli.command()
+@click.argument('path_to_file', required=True, type=str)
+@click.option('-e', '--email', required=True, type=str, help='User email.')
+@click.option('-r', '--recid', default=None, type=str, help='Record ID (if updating already existing record).')
+@click.option('-s', '--sandbox', default=True, type=bool, help='Whether to upload to the sandbox or not.')
+@click.pass_obj
+def upload(client, path_to_file, email, recid, sandbox):
+    """CLI interface to API client.find function."""
+    client.upload(path_to_file, email, recid, sandbox)

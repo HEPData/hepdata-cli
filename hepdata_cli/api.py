@@ -11,7 +11,7 @@ import errno
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
-SITE_URL = "https://www.hepdata.net"
+SITE_URL = "http://127.0.0.1:5000"
 MAX_MATCHES = 10000
 MATCHES_PER_PAGE = 10
 
@@ -120,6 +120,16 @@ class Client(object):
             json_dict = response.json()
             table_names += [[data_table['processed_name'] for data_table in json_dict['data_tables']]]
         return table_names
+
+    def upload(self, path_to_file, email, recid=None, sandbox=True):
+        """ Upload record. """
+        files = {'file': open(path_to_file, 'rb')}
+        data = {'email': email}
+        if recid is not None:
+            data['recid'] = recid
+        if sandbox is True:
+            response = requests_retry('post', SITE_URL + '/record/sandbox/upload', data=data, files=files)
+            response.raise_for_status()
 
     def _build_urls(self, id_list, file_format, ids, table_name):
         """Builds urls for download and fetch_names, given the specified parameters."""
