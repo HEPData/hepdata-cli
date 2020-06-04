@@ -30,7 +30,7 @@ def find(client, query, keyword, ids):
 @click.option('-f', '--file-format', required=True, type=str, help='Specify file format (csv, root, yaml, yoda, or json) to be downloaded.')
 @click.option('-i', '--ids', required=True, type=str, help='Specify which ids (hepdata or inspire) are given.')
 @click.option('-t', '--table-name', default='', type=str, help='Specify table to be downloaded.')
-@click.option('-d', '--download_dir', default='./hepdata-downloads', type=str, help='Specify where to download the files..')
+@click.option('-d', '--download-dir', default='./hepdata-downloads', type=str, help='Specify where to download the files..')
 @click.pass_obj
 def download(client, id_list, file_format, ids, table_name, download_dir):
     """CLI interface to API client.download function."""
@@ -50,8 +50,9 @@ def fetch_names(client, id_list, ids):
 @click.argument('path_to_file', required=True, type=str)
 @click.option('-e', '--email', required=True, type=str, help='User email.')
 @click.option('-r', '--recid', default=None, type=str, help='Record ID (if updating already existing record).')
+@click.option('-i', '--invitation-cookie', default=None, type=str, help='Invitation cookie (if NOT uploading to sandbox).')
 @click.option('-s', '--sandbox', default=True, type=bool, help='Whether to upload to the sandbox or not.')
 @click.pass_obj
-def upload(client, path_to_file, email, recid, sandbox):
+def upload(client, path_to_file, email, recid, invitation_cookie, sandbox):
     """CLI interface to API client.find function."""
-    client.upload(path_to_file, email, recid, sandbox)
+    client.upload(path_to_file, email, recid, invitation_cookie, sandbox)

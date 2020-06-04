@@ -4,6 +4,7 @@ from .version import __version__
 
 import requests
 import tarfile
+import sys
 import re
 import os
 import errno
@@ -11,9 +12,14 @@ import errno
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
-SITE_URL = "http://127.0.0.1:5000"
+SITE_URL = "http://www.hepdata.net"
+# SITE_URL = "http://127.0.0.1:5000"
+
 MAX_MATCHES = 10000
 MATCHES_PER_PAGE = 10
+if "pytest" in sys.modules:
+    MAX_MATCHES = 100
+    MATCHES_PER_PAGE = 10
 
 retry_strategy = Retry(total=5,
                        backoff_factor=2,
@@ -54,6 +60,7 @@ class Client(object):
 
         :return: returns a list of (filtered if 'keyword' is specified) dictionaries for the search matches. If 'ids' is specified it instead returns a list of ids as a string.
         """
+        print(max_matches, MAX_MATCHES)
         find_results = []
         for counter in range(int(max_matches / matches_per_page)):
             counter += 1
@@ -121,15 +128,18 @@ class Client(object):
             table_names += [[data_table['processed_name'] for data_table in json_dict['data_tables']]]
         return table_names
 
-    def upload(self, path_to_file, email, recid=None, sandbox=True):
+    def upload(self, path_to_file, email, recid=None, invitation_cookie=None, sandbox=True):
         """ Upload record. """
         files = {'file': open(path_to_file, 'rb')}
         data = {'email': email}
         if recid is not None:
             data['recid'] = recid
+        if invitation_cookie is not None:
+            data['invitation_cookie'] = invitation_cookie
         if sandbox is True:
-            response = requests_retry('post', SITE_URL + '/record/sandbox/upload', data=data, files=files)
-            response.raise_for_status()
+            requests_retry('post', SITE_URL + '/record/sandbox/upload', data=data, files=files)
+        else:
+            requests_retry('post', SITE_URL + '/record/upload', data=data, files=files)
 
     def _build_urls(self, id_list, file_format, ids, table_name):
         """Builds urls for download and fetch_names, given the specified parameters."""
