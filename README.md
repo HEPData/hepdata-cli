@@ -10,7 +10,7 @@
 
 ## About
 
-Command line interface (CLI) and application program interface (API) to allow users to search and download from HEPData.
+Command line interface (CLI) and application program interface (API) to allow users to search, download from and upload to [HEPData](https://www.hepdata.net).
 
 The code is compatible with both Python 2 and Python 3.
 
@@ -39,7 +39,7 @@ $ source ~/venv/hepdata-cli/bin/activate
 
 ## Usage
 
-You can use HEPData-CLI both as a command-line interface (CLI) to search and download records from the HEPData database, or as a Python library to perform the same operations via its application program interface (API).
+You can use HEPData-CLI both as a command-line interface (CLI) to search, download and upload records from/to the HEPData database, or as a Python library to perform the same operations via its application program interface (API).
 
 
 # CLI
@@ -49,6 +49,7 @@ $ hepdata-cli [-v/--version, --help]
 $ hepdata-cli [--verbose] find [TEXT] [-kw/--keyword TEXT] [-i/--ids IDTYPE]
 $ hepdata-cli [--verbose] download [IDS] [-f/--file-format FORMAT] [-i/--ids IDTYPE] [-t/--table-name TABLE-NAME]
 $ hepdata-cli [--verbose] fetch-names [IDS] [-i/--ids IDTYPE]
+$ hepdata-cli [--verbose] upload [PATH-TO-FILE-ARCHIVE] [-e/--email YOUR-EMAIL] [-r/--recid RECORD-ID] [-i/--invitation-cookie COOKIE] [-s/--sandbox TRUE/FALSE] 
 ```
 
 The command ```find``` searches the [HEPData](https://www.hepdata.net/) database for matches of ```TEXT```. The advanced search syntax from the website can be used.
@@ -56,6 +57,8 @@ The command ```find``` searches the [HEPData](https://www.hepdata.net/) database
 The command ```download``` downloads records from the database (see options below).
 
 The command ```fetch-names``` returns the names of the data tables in the records whose ids are supplied.
+
+The command ```upload``` uploads to the HEPData database a new or updated submission. The uploaded file should be an archive.
 
 The argument ```[-kw/--keyword TEXT]``` filters the search result dictionary for specific keywords.
 An exact match of the keyword is first attempted, otherwise partial matches are accepted.
@@ -67,6 +70,16 @@ In the first four cases a .tar.gz archive is downloaded, in the last case a .jso
 
 The argument  ```[-t/--table TABLE-NUMBER]``` accepts a number as input.
 In this case only the specified table is download as a .csv, .root, .yaml or .yoda file.
+
+The argument ```[-e/--email YOUR-EMAIL]``` is the uploader's email, needed to associate the submission to his account.
+
+The argument ```[-r/--recid RECORD-ID]``` should be supplied if the submission is being updated.
+This is always the case for non-sandbox submissions, since the sumbission process is initialised by the coordinator.
+
+The argument ```[-i/--invitation-cookie COOKIE]``` must be supplied for non-sandbox submissions.
+This can be found in the email received at the beginning of the submission process.
+
+The argument ```[-s/--sandbox TRUE/FALSE]``` is a boolean to decide whether to upload to the sandbox or not.
 
 The ```hepdata-cli download/fetch-names``` and ```hepdata-cli find``` commands can be concatenated, if a ```IDTYPE``` is specified for ```find```.
 It is also possible to concatenate ```arxiv download```, form [pypi/arxiv-cli](https://pypi.org/project/arxiv-cli/), with ```hepdata-cli find```, if ```arxiv``` is used as ```IDTYPE```.
@@ -183,3 +196,31 @@ client.fetch_names(id_list, ids='hepdata')
 ```
 
 returns all table names in the four matching records.
+
+### Example 7 - upload record to the sandbox:
+
+```code
+$ hepdata-cli upload /path/to/TestHEPSubmission.tar.gz -e my@email.com -s True
+```
+
+or equivalently
+
+```python
+client.upload('/path/to/TestHEPSubmission.tar.gz', email='my@email.com', sandbox=True)
+```
+
+the uploaded submission can then be found at https://www.hepdata.net/record/sandbox.
+
+### Example 8 - upload a non-sandbox record:
+
+```code
+$ hepdata-cli upload /path/to/TestHEPSubmission.tar.gz -e my@email.com -r 278 -i 8232e07f-d1d8-4883-bb1d-77fd9994ce4f -s False 
+```
+
+or equivalently
+
+```python
+client.upload('/path/to/TestHEPSubmission.tar.gz', email='my@email.com', recid='278', invitation_cookie='8232e07f-d1d8-4883-bb1d-77fd9994ce4f', sandbox=False)
+```
+
+the uploaded submission can then be found at https://www.hepdata.net/dashboard/.
