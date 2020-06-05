@@ -2,7 +2,6 @@
 
 import pytest
 import os
-import shutil
 import requests_mock
 
 from click.testing import CliRunner
@@ -26,7 +25,7 @@ def test_api_upload(path_to_file, email, recid, invitation_cookie, sandbox):
     with requests_mock.Mocker() as m:
         m.register_uri('GET', 'https://www.hepdata.net/ping', real_http=True)
         m.register_uri('GET', 'http://www.hepdata.net/ping', real_http=True)
-        m.post('http://www.hepdata.net/record/sandbox/upload', text='sandbox_response')
+        m.post('http://www.hepdata.net/record/sandbox/consume', text='sandbox_response')
         m.post('http://www.hepdata.net/record/upload', text='response')
         client = Client(verbose=True)
         client.upload(path_to_file, email, recid, invitation_cookie, sandbox)

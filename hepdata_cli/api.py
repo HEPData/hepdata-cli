@@ -130,14 +130,17 @@ class Client(object):
 
     def upload(self, path_to_file, email, recid=None, invitation_cookie=None, sandbox=True):
         """ Upload record. """
-        files = {'file': open(path_to_file, 'rb')}
+        files = {'hep_archive': open(path_to_file, 'rb')}
         data = {'email': email}
-        if recid is not None:
-            data['recid'] = recid
+        # if recid is not None:
+        #     data['recid'] = recid
         if invitation_cookie is not None:
             data['invitation_cookie'] = invitation_cookie
         if sandbox is True:
-            requests_retry('post', SITE_URL + '/record/sandbox/upload', data=data, files=files)
+            if recid is None:
+                requests_retry('post', SITE_URL + '/record/sandbox/consume', data=data, files=files)
+            else:
+                requests_retry('post', SITE_URL + '/record/sandbox/' + str(recid) + '/consume', data=data, files=files)
         else:
             requests_retry('post', SITE_URL + '/record/upload', data=data, files=files)
 
