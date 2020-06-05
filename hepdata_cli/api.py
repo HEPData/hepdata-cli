@@ -4,6 +4,7 @@ from .version import __version__
 
 import requests
 import tarfile
+import sys
 import re
 import os
 import errno
@@ -11,9 +12,14 @@ import errno
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
-SITE_URL = "https://www.hepdata.net"
+SITE_URL = "http://www.hepdata.net"
+# SITE_URL = "http://127.0.0.1:5000"
+
 MAX_MATCHES = 10000
 MATCHES_PER_PAGE = 10
+if "pytest" in sys.modules:
+    MAX_MATCHES = 100
+    MATCHES_PER_PAGE = 10
 
 retry_strategy = Retry(total=5,
                        backoff_factor=2,
