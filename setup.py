@@ -21,6 +21,7 @@ install_requirements = [
 test_requirements = [
     'pytest',
     'pytest-cov',
+    'requests_mock',
 ]
 
 extras_require = {
