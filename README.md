@@ -42,7 +42,7 @@ $ source ~/venv/hepdata-cli/bin/activate
 You can use HEPData-CLI both as a command-line interface (CLI) to search and download records from the HEPData database, or as a Python library to perform the same operations via its application program interface (API).
 
 
-# CLI
+## CLI
 
 ```code
 $ hepdata-cli [-v/--version, --help]
@@ -74,7 +74,7 @@ If not specified, the default download directory is ```./hepdata-downloads```.
 The ```hepdata-cli download/fetch-names``` and ```hepdata-cli find``` commands can be concatenated, if an ```IDTYPE``` is specified for ```find```.
 It is also possible to concatenate ```arxiv download```, from [pypi/arxiv-cli](https://pypi.org/project/arxiv-cli/), with ```hepdata-cli find```, if ```arxiv``` is used as ```IDTYPE```.
 
-# API
+## API
 
 Equivalently to the above, these commands can be invoked by the API (in fact, the CLI is just a wrapper around the API).
 
