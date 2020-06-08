@@ -130,3 +130,12 @@ dmypy.json
 
 # Temporary files
 *.*~
+
+# .hidden files
+**/.hidden
+
+# PyCharm directory
+.idea
+
+# Default download directory
+hepdata-downloads

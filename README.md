@@ -12,11 +12,11 @@
 
 Command line interface (CLI) and application program interface (API) to allow users to search and download from HEPData.
 
-The code is compatible with both Python 2 and Python 3.
+The code is compatible with both Python 2 and Python 3. Inspiration from [arxiv-cli](https://github.com/jacquerie/arxiv-cli).
 
 ## Installation (for users)
 
-Install from [PyPI](https://pypi.org/) (coming soon):
+Install from [PyPI](https://pypi.org/project/hepdata-cli/) using ```pip```:
 
 ```code
 $ pip install --user hepdata-cli
@@ -46,30 +46,33 @@ You can use HEPData-CLI both as a command-line interface (CLI) to search and dow
 
 ```code
 $ hepdata-cli [-v/--version, --help]
-$ hepdata-cli [--verbose] find [TEXT] [-kw/--keyword TEXT] [-i/--ids IDTYPE]
-$ hepdata-cli [--verbose] download [IDS] [-f/--file-format FORMAT] [-i/--ids IDTYPE] [-t/--table-name TABLE-NAME]
+$ hepdata-cli [--verbose] find [QUERY] [-kw/--keyword KEYWORD] [-i/--ids IDTYPE]
+$ hepdata-cli [--verbose] download [IDS] [-f/--file-format FORMAT] [-i/--ids IDTYPE] [-t/--table-name TABLE-NAME] [-d/--download-dir DOWNLOAD-DIR]
 $ hepdata-cli [--verbose] fetch-names [IDS] [-i/--ids IDTYPE]
 ```
 
-The command ```find``` searches the [HEPData](https://www.hepdata.net/) database for matches of ```TEXT```. The advanced search syntax from the website can be used.
+The command ```find``` searches the [HEPData](https://www.hepdata.net/) database for matches of ```QUERY```. The advanced search syntax from the website can be used.
 
 The command ```download``` downloads records from the database (see options below).
 
 The command ```fetch-names``` returns the names of the data tables in the records whose ids are supplied.
 
-The argument ```[-kw/--keyword TEXT]``` filters the search result dictionary for specific keywords.
+The argument ```[-kw/--keyword KEYWORD]``` filters the search result dictionary for specific keywords.
 An exact match of the keyword is first attempted, otherwise partial matches are accepted.
 
 The argument ```[-i/--ids IDTYPE]``` accepts ```IDTYPE``` equal to ```arxiv```, ```hepdata``` or```inspire```.
 
 The argument  ```[-f/--file-format FORMAT]``` accepts ```FORMAT``` equal to ```csv```, ```root```, ```yaml```, ```yoda```, or ```json```.
-In the first four cases a .tar.gz archive is downloaded, in the last case a .json file is downloaded.
+In the first four cases a .tar.gz archive is downloaded and unpacked as a directory, whereas in the last case a .json file is downloaded.
 
-The argument  ```[-t/--table TABLE-NUMBER]``` accepts a number as input.
-In this case only the specified table is download as a .csv, .root, .yaml or .yoda file.
+The argument  ```[-t/--table-name TABLE-NAME]``` accepts a string giving the table name as input.
+In this case only the specified table is downloaded as a .csv, .root, .yaml, .yoda or .json file.
 
-The ```hepdata-cli download/fetch-names``` and ```hepdata-cli find``` commands can be concatenated, if a ```IDTYPE``` is specified for ```find```.
-It is also possible to concatenate ```arxiv download```, form [pypi/arxiv-cli](https://pypi.org/project/arxiv-cli/), with ```hepdata-cli find```, if ```arxiv``` is used as ```IDTYPE```.
+The argument ```[-d/--download-dir DOWNLOAD-DIR]``` specifies the directory to download the files.
+If not specified, the default download directory is ```./hepdata-downloads```.
+
+The ```hepdata-cli download/fetch-names``` and ```hepdata-cli find``` commands can be concatenated, if an ```IDTYPE``` is specified for ```find```.
+It is also possible to concatenate ```arxiv download```, from [pypi/arxiv-cli](https://pypi.org/project/arxiv-cli/), with ```hepdata-cli find```, if ```arxiv``` is used as ```IDTYPE```.
 
 # API
 
@@ -77,7 +80,7 @@ Equivalently to the above, these commands can be invoked by the API (in fact, th
 
 ```python
 from hepdata_cli.api import Client
-client = Client(verbose=False)
+client = Client(verbose=True)
 client.find(query, keyword, ids)
 client.download(id_list, file_format, ids, table_name, download_dir)
 client.fetch_names(id_list, ids)
@@ -89,7 +92,7 @@ client.fetch_names(id_list, ids)
 ### Example 1 - a plain search:
 
 ```code
-$ hepdata-cli -v find 'reactions:"P P--> LQ LQ X"'
+$ hepdata-cli --verbose find 'reactions:"P P--> LQ LQ X"'
 ```
 
 or equivalently
@@ -103,7 +106,7 @@ matches a single entry and returns full metadata dictionary.
 ### Example 2 - search with keyword:
 
 ```code
-$ hepdata-cli -v find 'reactions:"P P--> LQ LQ"' -kw year
+$ hepdata-cli --verbose find 'reactions:"P P--> LQ LQ"' -kw year
 ```
 
 or equivalently
@@ -117,7 +120,7 @@ matches four entries and returns their publication years, as a dictionary.
 ### Example 3 - search for ids of records:
 
 ```code
-$ hepdata-cli -v find 'reactions:"P P--> LQ LQ"' -i hepdata
+$ hepdata-cli --verbose find 'reactions:"P P--> LQ LQ"' -i hepdata
 ```
 
 or equivalently
@@ -131,45 +134,19 @@ matches four entries and returns their hepdata ids, as a plain list.
 ### Example 4 - concatenate search with download using inspire ids:
 
 ```code
-$ hepdata-cli -v download $(hepdata-cli find 'reactions:"P P--> LQ LQ"' -i inspire) -i inspire -f csv
+$ hepdata-cli --verbose download $(hepdata-cli find 'reactions:"P P--> LQ LQ"' -i inspire) -i inspire -f csv
 ```
 
 or equivalently
 
 ```python
 id_list = client.find('reactions:"P P--> LQ LQ"', ids='inspire')
-client.download(id_list, ids='inspire', file_format='csv')
+client.download(id_list.split(), ids='inspire', file_format='csv')
 ```
 
-downloads four csv.tar.gz archives.
+downloads four .tar.gz archives containing csv files and unpacks them in the default ```./hepdata-downloads``` directory.
 
-### Example 5 - concatenate search with download from arxiv-cli:
-
-This example requires [arxiv-cli](https://github.com/jacquerie/arxiv-cli) to be installed, which is easily done via:
-
-```code
-$ pip install --user arxiv-cli
-```
-
-Then,
-
-```code
-$ arxiv download $(hepdata-cli find 'reactions:"P P--> LQ LQ"' -i arxiv)
-```
-or equivalently
-
-```python
-import arxiv_cli
-import hepdata_cli
-arxiv_client = arxiv_cli.Client()
-hepdata_client = hepdata_cli.Client()
-id_list = hepdata_client.find('reactions:"P P--> LQ LQ"', ids='arxiv')
-arxiv_client.download(id_list)
-```
-
-downloads two pdfs from the arXiv.
-
-### Example 6 - find table names in records:
+### Example 5 - find table names in records:
 
 ```code
 $ hepdata-cli fetch-names $(hepdata-cli find 'reactions:"P P--> LQ LQ"' -i hepdata) -i hepdata
@@ -179,7 +156,37 @@ or equivalently
 
 ```python
 id_list = client.find('reactions:"P P--> LQ LQ"', ids='hepdata')
-client.fetch_names(id_list, ids='hepdata')
+client.fetch_names(id_list.split(), ids='hepdata')
 ```
 
 returns all table names in the four matching records.
+
+### Example 6 - concatenate search with download from arxiv-cli:
+
+This example requires [arxiv-cli](https://github.com/jacquerie/arxiv-cli) to be installed, which is easily done via:
+
+```code
+$ pip install --user arxiv-cli
+```
+
+Note that arxiv-cli installs an older version of [click](https://pypi.org/project/click/) which changes the CLI command
+in Example 5 above from ```fetch-names``` to ```fetch_names```.
+
+Then,
+
+```code
+$ arxiv download $(hepdata-cli find 'reactions:"P P--> LQ LQ"' -i arxiv)
+```
+
+or equivalently
+
+```python
+import arxiv_cli
+import hepdata_cli
+arxiv_client = arxiv_cli.Client()
+hepdata_client = hepdata_cli.Client()
+id_list = hepdata_client.find('reactions:"P P--> LQ LQ"', ids='arxiv')
+arxiv_client.download(id_list.split())
+```
+
+downloads two pdfs from the arXiv.
