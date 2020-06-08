@@ -132,17 +132,16 @@ class Client(object):
         """ Upload record. """
         files = {'hep_archive': open(path_to_file, 'rb')}
         data = {'email': email}
-        # if recid is not None:
-        #     data['recid'] = recid
-        if invitation_cookie is not None:
-            data['invitation_cookie'] = invitation_cookie
         if sandbox is True:
             if recid is None:
                 requests_retry('post', SITE_URL + '/record/sandbox/consume', data=data, files=files)
             else:
                 requests_retry('post', SITE_URL + '/record/sandbox/' + str(recid) + '/consume', data=data, files=files)
         else:
-            requests_retry('post', SITE_URL + '/record/upload', data=data, files=files)
+            assert recid is not None, "Record ID must be supplied for non sandbox submission."
+            assert invitation_cookie is not None, "Invitation cookie must be supplied for non-sandbox submission."
+            data['invitation_cookie'] = invitation_cookie
+            requests_retry('post', SITE_URL + '/record/' + str(recid) + '/consume', data=data, files=files)
 
     def _build_urls(self, id_list, file_format, ids, table_name):
         """Builds urls for download and fetch_names, given the specified parameters."""
