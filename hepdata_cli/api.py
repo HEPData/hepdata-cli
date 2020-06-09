@@ -18,8 +18,8 @@ SITE_URL = "http://www.hepdata.net"
 MAX_MATCHES = 10000
 MATCHES_PER_PAGE = 10
 if "pytest" in sys.modules:
-    MAX_MATCHES = 100
-    MATCHES_PER_PAGE = 10
+    MAX_MATCHES = 144
+    MATCHES_PER_PAGE = 12
 
 retry_strategy = Retry(total=5,
                        backoff_factor=2,
@@ -65,6 +65,7 @@ class Client(object):
             counter += 1
             response = self._query(query, page=counter, size=matches_per_page)
             data = response.json()
+            print(len(data['results']))
             if len(data['results']) == 0:
                 break
             elif keyword is None and ids is None:
@@ -145,6 +146,8 @@ class Client(object):
 
     def _build_urls(self, id_list, file_format, ids, table_name):
         """Builds urls for download and fetch_names, given the specified parameters."""
+        if type(id_list) not in (tuple, list):
+            id_list = id_list.split()
         assert len(id_list) > 0, 'Ids are required.'
         assert file_format in ['csv', 'root', 'yaml', 'yoda', 'json'], "allowed formats are: csv, root, yaml, yoda and json."
         assert ids in ['inspire', 'hepdata'], "allowed ids are: inspire and hepdata."

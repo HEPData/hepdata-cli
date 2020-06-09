@@ -13,8 +13,8 @@ from hepdata_cli.cli import cli
 # arguments for testing
 
 test_upload_arguments = [
-    (os.path.dirname(__file__) + "/" + 'TestHEPSubmission.tar.gz', 'my@email.com', None, None, True),
-    (os.path.dirname(__file__) + "/" + 'TestHEPSubmission.tar.gz', 'my@email.com', '278', '8232e07f-d1d8-4883-bb1d-77fd9994ce4f', False),
+    (os.path.dirname(__file__) + "/SubmissionTestFiles/" + 'TestHEPSubmission.tar.gz', 'my@email.com', None, None, True),
+    (os.path.dirname(__file__) + "/SubmissionTestFiles/" + 'TestHEPSubmission.tar.gz', 'my@email.com', '278', '8232e07f-d1d8-4883-bb1d-77fd9994ce4f', False),
 ]
 
 

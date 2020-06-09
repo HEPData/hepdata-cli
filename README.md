@@ -154,7 +154,7 @@ or equivalently
 
 ```python
 id_list = client.find('reactions:"P P--> LQ LQ"', ids='inspire')
-client.download(id_list.split(), ids='inspire', file_format='csv')
+client.download(id_list, ids='inspire', file_format='csv')
 ```
 
 downloads four .tar.gz archives containing csv files and unpacks them in the default ```./hepdata-downloads``` directory.
@@ -169,7 +169,7 @@ or equivalently
 
 ```python
 id_list = client.find('reactions:"P P--> LQ LQ"', ids='hepdata')
-client.fetch_names(id_list.split(), ids='hepdata')
+client.fetch_names(id_list, ids='hepdata')
 ```
 
 returns all table names in the four matching records.
@@ -199,7 +199,7 @@ import hepdata_cli
 arxiv_client = arxiv_cli.Client()
 hepdata_client = hepdata_cli.Client()
 id_list = hepdata_client.find('reactions:"P P--> LQ LQ"', ids='arxiv')
-arxiv_client.download(id_list.split())
+arxiv_client.download(id_list)
 ```
 
 downloads two pdfs from the arXiv.
