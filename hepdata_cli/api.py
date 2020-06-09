@@ -56,11 +56,10 @@ class Client(object):
 
         :param query: string passed to hepdata.net search function. See advanced search tips at hepdata.net.
         :param keyword: filters return dictionary for given keyword. Exact match is first attempted, otherwise partial match is accepted.
-        :param ids: acceps one of ("arxiv", "inspire", "hepdata").
+        :param ids: accepts one of ("arxiv", "inspire", "hepdata").
 
         :return: returns a list of (filtered if 'keyword' is specified) dictionaries for the search matches. If 'ids' is specified it instead returns a list of ids as a string.
         """
-        print(max_matches, MAX_MATCHES)
         find_results = []
         for counter in range(int(max_matches / matches_per_page)):
             counter += 1
@@ -102,11 +101,12 @@ class Client(object):
         Downloads from the hepdata database the specified records.
 
         :param id_list: list of ids to download. These can be obtained by the find function.
-        :param file_format: accepts one of ('csv', 'root', 'yaml', 'yoda', 'json'). Specified the download file format.
-        :param ids: accepts one of ('inspire', 'hepdata'). It specifies what type of ids have been passes.
+        :param file_format: accepts one of ('csv', 'root', 'yaml', 'yoda', 'json'). Specifies the download file format.
+        :param ids: accepts one of ('inspire', 'hepdata'). It specifies what type of ids have been passed.
         :param table_name: restricts download to specific tables.
-        :param download_dir: defaults to ~/Downloads. Speficies where to download the files.
+        :param download_dir: defaults to ./hepdata-downloads. Specifies where to download the files.
         """
+
         urls = self._build_urls(id_list, file_format, ids, table_name)
         for url in urls:
             if self.verbose is True:
@@ -118,14 +118,14 @@ class Client(object):
         Returns the names of the tables in the provided records. These are the possible inputs of table_name parameter in download function.
 
         :param id_list: list of id of records of which to return table names.
-        :param ids: accepts one of ('inspire', 'hepdata'). It specifies what type of ids have been passes.
+        :param ids: accepts one of ('inspire', 'hepdata'). It specifies what type of ids have been passed.
         """
         urls = self._build_urls(id_list, 'json', ids, '')
         table_names = []
         for url in urls:
             response = requests_retry('get', url)
             json_dict = response.json()
-            table_names += [[data_table['processed_name'] for data_table in json_dict['data_tables']]]
+            table_names += [[data_table['name'] for data_table in json_dict['data_tables']]]
         return table_names
 
     def upload(self, path_to_file, email, recid=None, invitation_cookie=None, sandbox=True):
