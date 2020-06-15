@@ -58,8 +58,6 @@ The command ```download``` downloads records from the database (see options belo
 
 The command ```fetch-names``` returns the names of the data tables in the records whose ids are supplied.
 
-The command ```upload``` uploads to the HEPData database a new or updated submission. The uploaded file should be an archive.
-
 The argument ```[-kw/--keyword KEYWORD]``` filters the search result dictionary for specific keywords.
 An exact match of the keyword is first attempted, otherwise partial matches are accepted.
 
@@ -75,9 +73,6 @@ The argument ```[-d/--download-dir DOWNLOAD-DIR]``` specifies the directory to d
 If not specified, the default download directory is ```./hepdata-downloads```.
 
 The argument ```[-e/--email YOUR-EMAIL]``` is the uploader's email, needed to associate the submission to his account.
-
-The ```hepdata-cli download/fetch-names``` and ```hepdata-cli find``` commands can be concatenated, if an ```IDTYPE``` is specified for ```find```.
-It is also possible to concatenate ```arxiv download```, from [pypi/arxiv-cli](https://pypi.org/project/arxiv-cli/), with ```hepdata-cli find```, if ```arxiv``` is used as ```IDTYPE```.
 
 The argument ```[-i/--invitation-cookie COOKIE]``` must be supplied for non-sandbox submissions.
 This can be found in the email received at the beginning of the submission process.

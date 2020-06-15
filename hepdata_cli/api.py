@@ -65,7 +65,6 @@ class Client(object):
             counter += 1
             response = self._query(query, page=counter, size=matches_per_page)
             data = response.json()
-            print(len(data['results']))
             if len(data['results']) == 0:
                 break
             elif keyword is None and ids is None:
