@@ -24,14 +24,13 @@ test_upload_arguments = [
 def test_api_upload(path_to_file, email, recid, invitation_cookie, sandbox):
     with requests_mock.Mocker() as m:
         m.register_uri('GET', 'https://www.hepdata.net/ping', real_http=True)
-        m.register_uri('GET', 'http://www.hepdata.net/ping', real_http=True)
         if sandbox is True:
             if recid is None:
-                m.post('http://www.hepdata.net/record/sandbox/consume', text='sandbox_response')
+                m.post('https://www.hepdata.net/record/sandbox/consume', text='sandbox_response')
             else:
-                m.post('http://www.hepdata.net/record/sandbox/' + recid + '/consume', text='response')
+                m.post('https://www.hepdata.net/record/sandbox/' + recid + '/consume', text='response')
         else:
-            m.post('http://www.hepdata.net/record/' + recid + '/consume', text='response')
+            m.post('https://www.hepdata.net/record/' + recid + '/consume', text='response')
         client = Client(verbose=True)
         client.upload(path_to_file, email, recid, invitation_cookie, sandbox)
 
@@ -42,13 +41,12 @@ def test_api_upload(path_to_file, email, recid, invitation_cookie, sandbox):
 def test_cli_upload(path_to_file, email, recid, invitation_cookie, sandbox):
     with requests_mock.Mocker() as m:
         m.register_uri('GET', 'https://www.hepdata.net/ping', real_http=True)
-        m.register_uri('GET', 'http://www.hepdata.net/ping', real_http=True)
         if sandbox is True:
             if recid is None:
-                m.post('http://www.hepdata.net/record/sandbox/consume', text='sandbox_response')
+                m.post('https://www.hepdata.net/record/sandbox/consume', text='sandbox_response')
             else:
-                m.post('http://www.hepdata.net/record/sandbox/' + recid + '/consume', text='response')
+                m.post('https://www.hepdata.net/record/sandbox/' + recid + '/consume', text='response')
         else:
-            m.post('http://www.hepdata.net/record/' + recid + '/consume', text='response')
+            m.post('https://www.hepdata.net/record/' + recid + '/consume', text='response')
         runner = CliRunner()
         runner.invoke(cli, ['upload', path_to_file, '-e', email, '-r', recid, '-i', invitation_cookie, '-s', sandbox])
