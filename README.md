@@ -58,6 +58,8 @@ The command ```download``` downloads records from the database (see options belo
 
 The command ```fetch-names``` returns the names of the data tables in the records whose ids are supplied.
 
+The command ```upload``` uploads a file to the HEPData web site as either a sandbox or normal record.
+
 The argument ```[-kw/--keyword KEYWORD]``` filters the search result dictionary for specific keywords.
 An exact match of the keyword is first attempted, otherwise partial matches are accepted.
 
@@ -72,10 +74,10 @@ In this case only the specified table is downloaded as a .csv, .root, .yaml, .yo
 The argument ```[-d/--download-dir DOWNLOAD-DIR]``` specifies the directory to download the files.
 If not specified, the default download directory is ```./hepdata-downloads```.
 
-The argument ```[-e/--email YOUR-EMAIL]``` is the uploader's email, needed to associate the submission to his account.
+The argument ```[-e/--email YOUR-EMAIL]``` is the uploader's email, needed to associate the submission to their HEPData account.
 
 The argument ```[-i/--invitation-cookie COOKIE]``` must be supplied for non-sandbox submissions.
-This can be found in the email received at the beginning of the submission process.
+This can be found in the Uploader invitation email received at the beginning of the submission process.
 
 The argument ```[-s/--sandbox TRUE/FALSE]``` is a boolean to decide whether to upload to the sandbox or not.
 
@@ -92,6 +94,7 @@ client = Client(verbose=True)
 client.find(query, keyword, ids)
 client.download(id_list, file_format, ids, table_name, download_dir)
 client.fetch_names(id_list, ids)
+client.upload(path_to_file, email, recid, invitation_cookie, sandbox)
 
 ```
 
@@ -211,18 +214,34 @@ or equivalently
 client.upload('/path/to/TestHEPSubmission.tar.gz', email='my@email.com', sandbox=True)
 ```
 
-the uploaded submission can then be found at https://www.hepdata.net/record/sandbox.
+the uploaded submission can then be found from your [sandbox](https://www.hepdata.net/record/sandbox).
 
-### Example 8 - upload a non-sandbox record:
+### Example 8 - replace a record in the sandbox:
 
 ```code
-$ hepdata-cli upload /path/to/TestHEPSubmission.tar.gz -e my@email.com -r 278 -i 8232e07f-d1d8-4883-bb1d-77fd9994ce4f -s False 
+$ hepdata-cli upload /path/to/TestHEPSubmission.tar.gz -e my@email.com -r 1234567890 -s True
 ```
 
 or equivalently
 
 ```python
-client.upload('/path/to/TestHEPSubmission.tar.gz', email='my@email.com', recid='278', invitation_cookie='8232e07f-d1d8-4883-bb1d-77fd9994ce4f', sandbox=False)
+client.upload('/path/to/TestHEPSubmission.tar.gz', email='my@email.com', recid='1234567890', sandbox=True)
 ```
 
-the uploaded submission can then be found at https://www.hepdata.net/dashboard/.
+Note that you must have uploaded the original sandbox record yourself.
+
+### Example 9 - upload a non-sandbox record:
+
+```code
+$ hepdata-cli upload /path/to/TestHEPSubmission.tar.gz -e my@email.com -r 123456 -i 8232e07f-d1d8-4883-bb1d-77fd9994ce4f -s False 
+```
+
+or equivalently
+
+```python
+client.upload('/path/to/TestHEPSubmission.tar.gz', email='my@email.com', recid='123456', invitation_cookie='8232e07f-d1d8-4883-bb1d-77fd9994ce4f', sandbox=False)
+```
+
+The uploaded submission can then be found from your [Dashboard](https://www.hepdata.net/dashboard/).
+The invitation cookie is sent in your original invitation email.
+You must have already claimed permissions by clicking the link in that email or from your [Dashboard](https://www.hepdata.net/dashboard/).

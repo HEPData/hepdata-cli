@@ -12,7 +12,7 @@ import errno
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
-SITE_URL = "http://www.hepdata.net"
+SITE_URL = "https://www.hepdata.net"
 # SITE_URL = "http://127.0.0.1:5000"
 
 MAX_MATCHES = 10000
@@ -129,7 +129,15 @@ class Client(object):
         return table_names
 
     def upload(self, path_to_file, email, recid=None, invitation_cookie=None, sandbox=True):
-        """ Upload record. """
+        """
+        Upload record.
+
+        :param path_to_file: path of file to be uploaded.
+        :param email: email address of existing HEPData user.
+        :recid: HEPData ID (not the INSPIRE ID) of an existing record.
+        :invitation_cookie: token sent in the invitation email for a non-sandbox record.
+        :sandbox: True (default) or False if the file should be uploaded to the sandbox.
+        """
         files = {'hep_archive': open(path_to_file, 'rb')}
         data = {'email': email}
         if sandbox is True:
@@ -138,7 +146,7 @@ class Client(object):
             else:
                 requests_retry('post', SITE_URL + '/record/sandbox/' + str(recid) + '/consume', data=data, files=files)
         else:
-            assert recid is not None, "Record ID must be supplied for non sandbox submission."
+            assert recid is not None, "Record ID must be supplied for non-sandbox submission."
             assert invitation_cookie is not None, "Invitation cookie must be supplied for non-sandbox submission."
             data['invitation_cookie'] = invitation_cookie
             requests_retry('post', SITE_URL + '/record/' + str(recid) + '/consume', data=data, files=files)

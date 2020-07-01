@@ -54,5 +54,5 @@ def fetch_names(client, id_list, ids):
 @click.option('-s', '--sandbox', default=True, type=bool, help='Whether to upload to the sandbox or not.')
 @click.pass_obj
 def upload(client, path_to_file, email, recid, invitation_cookie, sandbox):
-    """CLI interface to API client.find function."""
+    """CLI interface to API client.upload function."""
     client.upload(path_to_file, email, recid, invitation_cookie, sandbox)
