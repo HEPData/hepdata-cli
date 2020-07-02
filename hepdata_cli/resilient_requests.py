@@ -50,8 +50,8 @@ adapter = TimeoutHTTPAdapter(max_retries=retry_strategy)
 def expanded_raise_for_status(res):
     """
     Take a "requests" response object and expand the raise_for_status method to return more helpful errors
-    @param res:
-    @return: None
+    :param res:
+    :return: None
     """
     try:
         res.raise_for_status()
