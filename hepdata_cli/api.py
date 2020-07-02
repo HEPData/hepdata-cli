@@ -1,39 +1,19 @@
 # -*- coding: utf-8 -*-
 
 from .version import __version__
+from .resilient_requests import resilient_requests
 
-import requests
 import tarfile
 import sys
 import re
 import os
 import errno
 
-from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.util.retry import Retry
 
 SITE_URL = "https://www.hepdata.net"
 # SITE_URL = "http://127.0.0.1:5000"
 
-MAX_MATCHES = 10000
-MATCHES_PER_PAGE = 10
-if "pytest" in sys.modules:
-    MAX_MATCHES = 144
-    MATCHES_PER_PAGE = 12
-
-retry_strategy = Retry(total=5,
-                       backoff_factor=2,
-                       status_forcelist=[429, 500, 502, 503, 504],
-                       method_whitelist=["GET", "POST"])
-adapter = HTTPAdapter(max_retries=retry_strategy)
-
-
-def requests_retry(func, *args, **kwargs):
-    with requests.Session() as session:
-        session.mount("https://", adapter)
-        response = getattr(session, func)(*args, **kwargs)
-        response.raise_for_status()
-    return response
+MAX_MATCHES, MATCHES_PER_PAGE = (10000, 10) if "pytest" not in sys.modules else (144, 12)
 
 
 class Client(object):
@@ -48,7 +28,7 @@ class Client(object):
         self.verbose = verbose
         self.version = __version__
         # check service availability
-        requests_retry('get', SITE_URL + '/ping')
+        resilient_requests('get', SITE_URL + '/ping')
 
     def find(self, query, keyword=None, ids=None, max_matches=MAX_MATCHES, matches_per_page=MATCHES_PER_PAGE):
         """
@@ -123,7 +103,7 @@ class Client(object):
         urls = self._build_urls(id_list, 'json', ids, '')
         table_names = []
         for url in urls:
-            response = requests_retry('get', url)
+            response = resilient_requests('get', url)
             json_dict = response.json()
             table_names += [[data_table['name'] for data_table in json_dict['data_tables']]]
         return table_names
@@ -142,14 +122,14 @@ class Client(object):
         data = {'email': email}
         if sandbox is True:
             if recid is None:
-                requests_retry('post', SITE_URL + '/record/sandbox/consume', data=data, files=files)
+                resilient_requests('post', SITE_URL + '/record/sandbox/consume', data=data, files=files)
             else:
-                requests_retry('post', SITE_URL + '/record/sandbox/' + str(recid) + '/consume', data=data, files=files)
+                resilient_requests('post', SITE_URL + '/record/sandbox/' + str(recid) + '/consume', data=data, files=files)
         else:
             assert recid is not None, "Record ID must be supplied for non-sandbox submission."
             assert invitation_cookie is not None, "Invitation cookie must be supplied for non-sandbox submission."
             data['invitation_cookie'] = invitation_cookie
-            requests_retry('post', SITE_URL + '/record/' + str(recid) + '/consume', data=data, files=files)
+            resilient_requests('post', SITE_URL + '/record/' + str(recid) + '/consume', data=data, files=files)
 
     def _build_urls(self, id_list, file_format, ids, table_name):
         """Builds urls for download and fetch_names, given the specified parameters."""
@@ -162,13 +142,13 @@ class Client(object):
             params = {'format': file_format}
         else:
             params = {'format': file_format, 'table': table_name}
-        urls = [requests_retry('get', SITE_URL + '/record/' + ('ins' if ids == 'inspire' else '') + id_entry, params=params).url for id_entry in id_list]
+        urls = [resilient_requests('get', SITE_URL + '/record/' + ('ins' if ids == 'inspire' else '') + id_entry, params=params).url for id_entry in id_list]
         return urls
 
     def _query(self, query, page, size):
         """Builds the search query passed to hepdata.net."""
         url = SITE_URL + '/search/?q=' + query + '&format=json&page=' + str(page) + '&size=' + str(size)
-        response = requests_retry('get', url)
+        response = resilient_requests('get', url)
         if self.verbose is True:
             print('Looking up: ' + url)
         return response
@@ -186,7 +166,7 @@ def mkdir(directory):
 def download_url(url, download_dir):
     """Download file and if necessary extract it."""
     assert is_downloadable(url), "Given url is not downloadable: {}".format(url)
-    response = requests_retry('get', url, allow_redirects=True)
+    response = resilient_requests('get', url, allow_redirects=True)
     if url[-4:] == 'json':
         filename = 'HEPData-' + url.split('/')[-1].split("?")[0] + ".json"
     else:
@@ -220,7 +200,7 @@ def getFilename_fromCd(cd):
 
 def is_downloadable(url):
     """Does the url contain a downloadable resource?"""
-    header = requests_retry('head', url, allow_redirects=True).headers
+    header = resilient_requests('head', url, allow_redirects=True).headers
     content_type = header.get('content-type')
     if 'html' in content_type.lower():
         return False

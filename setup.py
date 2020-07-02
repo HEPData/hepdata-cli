@@ -16,6 +16,7 @@ with open(os.path.join('hepdata_cli', 'version.py'), 'rt') as fp:
 install_requirements = [
     'click',
     'requests',
+    'builtins',
 ]
 
 test_requirements = [
