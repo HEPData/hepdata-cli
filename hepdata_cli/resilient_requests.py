@@ -5,6 +5,7 @@ from builtins import super
 import requests
 import sys
 
+from requests.exceptions import HTTPError
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
@@ -46,9 +47,25 @@ retry_strategy = Retry(total=TOTAL_RETRIES,
 adapter = TimeoutHTTPAdapter(max_retries=retry_strategy)
 
 
+def expanded_raise_for_status(res):
+    """
+    Take a "requests" response object and expand the raise_for_status method to return more helpful errors
+    @param res:
+    @return: None
+    """
+    try:
+        res.raise_for_status()
+    except HTTPError as e:
+        if res.text.count("!!!") == 2:
+            raise HTTPError('{}\nReason: {}'.format(str(e), res.text.split("!!!")[1].split("!!!")[0]))
+        else:
+            raise e
+    return
+
+
 def resilient_requests(func, *args, **kwargs):
     with requests.Session() as session:
         session.mount("https://", adapter)
         response = getattr(session, func)(*args, **kwargs)
-        response.raise_for_status()
+        expanded_raise_for_status(response)
     return response
