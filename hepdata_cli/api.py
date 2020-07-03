@@ -124,13 +124,16 @@ class Client(object):
         if sandbox is True:
             if recid is None:
                 resilient_requests('post', SITE_URL + '/record/sandbox/consume', data=data, files=files)
+                print('Uploaded ' + path_to_file + ' to a new record at ' + SITE_URL + '/record/sandbox/')
             else:
                 resilient_requests('post', SITE_URL + '/record/sandbox/' + str(recid) + '/consume', data=data, files=files)
+                print('Uploaded ' + path_to_file + ' to ' + SITE_URL + '/record/sandbox/' + str(recid))
         else:
             assert recid is not None, "Record ID must be supplied for non-sandbox submission."
             assert invitation_cookie is not None, "Invitation cookie must be supplied for non-sandbox submission."
             data['invitation_cookie'] = invitation_cookie
             resilient_requests('post', SITE_URL + '/record/' + str(recid) + '/consume', data=data, files=files)
+            print('Uploaded ' + path_to_file + ' to ' + SITE_URL + '/record/' + str(recid))
 
     def _build_urls(self, id_list, file_format, ids, table_name):
         """Builds urls for download and fetch_names, given the specified parameters."""
