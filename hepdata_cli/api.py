@@ -177,13 +177,8 @@ def download_url(url, download_dir):
     filepath = download_dir + "/" + filename
     mkdir(os.path.dirname(filepath))
     open(filepath, 'wb').write(response.content)
-    if filepath.endswith("tar.gz"):
-        tar = tarfile.open(filepath, "r:gz")
-        tar.extractall(path=os.path.dirname(filepath))
-        tar.close()
-        os.remove(filepath)
-    elif filepath.endswith("tar"):
-        tar = tarfile.open(filepath, "r:")
+    if filepath.endswith("tar.gz") or filepath.endswith("tar"):
+        tar = tarfile.open(filepath, "r:gz" if filepath.endswith("tar.gz") else "r:")
         tar.extractall(path=os.path.dirname(filepath))
         tar.close()
         os.remove(filepath)
