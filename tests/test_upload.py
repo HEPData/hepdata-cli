@@ -54,10 +54,8 @@ def test_api_upload_HTTP_Exception(path_to_file, email, recid, invitation_cookie
         else:
             m.post('https://www.hepdata.net/record/' + recid + '/consume', text='!!!Error Reason Record Recid Consume!!!', status_code=400)
         client = Client(verbose=True)
-        try:
+        with pytest.raises(requests.exceptions.HTTPError):
             client.upload(path_to_file, email, recid, invitation_cookie, sandbox)
-        except requests.exceptions.HTTPError:
-            print("Success!")
 
 
 # cli testing

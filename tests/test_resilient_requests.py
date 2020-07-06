@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import pytest
 import requests
 
 from hepdata_cli.resilient_requests import TimeoutHTTPAdapter, retry_strategy
@@ -11,7 +12,5 @@ def test_timeout():
     adapter = TimeoutHTTPAdapter(max_retries=retry_strategy, timeout=0.0001)
     with requests.Session() as session:
         session.mount("https://", adapter)
-        try:
+        with pytest.raises(requests.exceptions.ConnectTimeout):
             session.get(SITE_URL + '/ping')
-        except requests.exceptions.ConnectTimeout:
-            pass
