@@ -4,6 +4,7 @@ import pytest
 import os
 import requests
 import requests_mock
+import getpass
 
 from click.testing import CliRunner
 
@@ -24,6 +25,7 @@ test_upload_arguments = [
 
 @pytest.mark.parametrize('path_to_file, email, recid, invitation_cookie, sandbox', test_upload_arguments)
 def test_api_upload(path_to_file, email, recid, invitation_cookie, sandbox):
+    setattr(getpass, 'getpass', lambda x: "baz")  # switch off password requests
     with requests_mock.Mocker() as m:
         m.register_uri('GET', 'https://www.hepdata.net/ping', real_http=True)
         if sandbox is True:
@@ -41,6 +43,7 @@ def test_api_upload(path_to_file, email, recid, invitation_cookie, sandbox):
 
 @pytest.mark.parametrize('path_to_file, email, recid, invitation_cookie, sandbox', test_upload_arguments)
 def test_api_upload_HTTP_Exception(path_to_file, email, recid, invitation_cookie, sandbox):
+    setattr(getpass, 'getpass', lambda x: "baz")  # switch off password requests
     with requests_mock.Mocker() as m:
         m.register_uri('GET', 'https://www.hepdata.net/ping', real_http=True)
         if sandbox is True:
@@ -61,6 +64,7 @@ def test_api_upload_HTTP_Exception(path_to_file, email, recid, invitation_cookie
 
 @pytest.mark.parametrize('path_to_file, email, recid, invitation_cookie, sandbox', test_upload_arguments)
 def test_cli_upload(path_to_file, email, recid, invitation_cookie, sandbox):
+    setattr(getpass, 'getpass', lambda x: "baz")  # switch off password requests
     with requests_mock.Mocker() as m:
         m.register_uri('GET', 'https://www.hepdata.net/ping', real_http=True)
         if sandbox is True:
