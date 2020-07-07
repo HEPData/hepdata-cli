@@ -56,9 +56,9 @@ def expanded_raise_for_status(res):
     try:
         res.raise_for_status()
     except HTTPError as e:
-        if res.text.count("!!!") == 2:
-            raise HTTPError('{}\nReason: {}'.format(str(e), res.text.split("!!!")[1].split("!!!")[0]))
-        else:
+        try:
+            raise HTTPError('{}\nReason: {}'.format(str(e), res.json()['message']))
+        except ValueError:
             raise e
     return
 
