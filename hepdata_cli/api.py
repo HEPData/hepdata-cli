@@ -8,7 +8,6 @@ import sys
 import re
 import os
 import errno
-import getpass
 
 SITE_URL = "https://www.hepdata.net"
 # SITE_URL = "http://127.0.0.1:5000"
@@ -109,7 +108,7 @@ class Client(object):
             table_names += [[data_table['name'] for data_table in json_dict['data_tables']]]
         return table_names
 
-    def upload(self, path_to_file, email, recid=None, invitation_cookie=None, sandbox=True):
+    def upload(self, path_to_file, email, recid=None, invitation_cookie=None, sandbox=True, password=None):
         """
         Upload record.
 
@@ -119,9 +118,8 @@ class Client(object):
         :invitation_cookie: token sent in the invitation email for a non-sandbox record.
         :sandbox: True (default) or False if the file should be uploaded to the sandbox.
         """
-        pswd = getpass.getpass('Password:')
         files = {'hep_archive': open(path_to_file, 'rb')}
-        data = {'email': email, 'pswd': pswd, 'hep-cli': True}
+        data = {'email': email, 'pswd': password, 'hep-cli': True}
         if sandbox is True:
             if recid is None:
                 resilient_requests('post', SITE_URL + '/record/sandbox/consume', data=data, files=files)

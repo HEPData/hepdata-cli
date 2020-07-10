@@ -52,7 +52,8 @@ def fetch_names(client, id_list, ids):
 @click.option('-r', '--recid', default=None, type=str, help='Record ID (if updating already existing record).')
 @click.option('-i', '--invitation-cookie', default=None, type=str, help='Invitation cookie (if NOT uploading to sandbox).')
 @click.option('-s', '--sandbox', default=True, type=bool, help='Whether to upload to the sandbox or not.')
+@click.option('--password', '-p', prompt=True, hide_input=True)
 @click.pass_obj
-def upload(client, path_to_file, email, recid, invitation_cookie, sandbox):
+def upload(client, path_to_file, email, recid, invitation_cookie, sandbox, password):
     """CLI interface to API client.upload function."""
-    client.upload(path_to_file, email, recid, invitation_cookie, sandbox)
+    client.upload(path_to_file, email, recid, invitation_cookie, sandbox, password)
