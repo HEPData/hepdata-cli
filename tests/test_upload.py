@@ -27,13 +27,7 @@ test_upload_arguments = [
 def test_api_upload(path_to_file, email, recid, invitation_cookie, sandbox, password):
     with requests_mock.Mocker() as m:
         m.register_uri('GET', 'https://www.hepdata.net/ping', real_http=True)
-        if sandbox is True:
-            if recid is None:
-                m.post('https://www.hepdata.net/record/sandbox/consume', text='sandbox_response')
-            else:
-                m.post('https://www.hepdata.net/record/sandbox/' + recid + '/consume', text='response')
-        else:
-            m.post('https://www.hepdata.net/record/' + recid + '/consume', text='response')
+        m.post('https://www.hepdata.net/record/cli_upload', text='hepdata_response')
         client = Client(verbose=True)
         client.upload(path_to_file, email, recid, invitation_cookie, sandbox, password)
 
@@ -44,13 +38,7 @@ def test_api_upload(path_to_file, email, recid, invitation_cookie, sandbox, pass
 def test_api_upload_HTTP_Exception(path_to_file, email, recid, invitation_cookie, sandbox, password):
     with requests_mock.Mocker() as m:
         m.register_uri('GET', 'https://www.hepdata.net/ping', real_http=True)
-        if sandbox is True:
-            if recid is None:
-                m.post('https://www.hepdata.net/record/sandbox/consume', text='!!!Error Reason Sandbox Consume!!!', status_code=400)
-            else:
-                m.post('https://www.hepdata.net/record/sandbox/' + recid + '/consume', text='!!!Error Reason Sandbox Recid Consume!!!', status_code=400)
-        else:
-            m.post('https://www.hepdata.net/record/' + recid + '/consume', text='!!!Error Reason Record Recid Consume!!!', status_code=400)
+        m.post('https://www.hepdata.net/record/cli_upload', text='hepdata_error_response', status_code=400)
         client = Client(verbose=True)
         with pytest.raises(requests.exceptions.HTTPError):
             client.upload(path_to_file, email, recid, invitation_cookie, sandbox, password)
@@ -62,12 +50,6 @@ def test_api_upload_HTTP_Exception(path_to_file, email, recid, invitation_cookie
 def test_cli_upload(path_to_file, email, recid, invitation_cookie, sandbox, password):
     with requests_mock.Mocker() as m:
         m.register_uri('GET', 'https://www.hepdata.net/ping', real_http=True)
-        if sandbox is True:
-            if recid is None:
-                m.post('https://www.hepdata.net/record/sandbox/consume', text='sandbox_response')
-            else:
-                m.post('https://www.hepdata.net/record/sandbox/' + recid + '/consume', text='response')
-        else:
-            m.post('https://www.hepdata.net/record/' + recid + '/consume', text='response')
+        m.post('https://www.hepdata.net/record/cli_upload', text='hepdata_response')
         runner = CliRunner()
         runner.invoke(cli, ['upload', path_to_file, '-e', email, '-r', recid, '-i', invitation_cookie, '-s', sandbox, '-p', password])

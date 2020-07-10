@@ -119,19 +119,14 @@ class Client(object):
         :sandbox: True (default) or False if the file should be uploaded to the sandbox.
         """
         files = {'hep_archive': open(path_to_file, 'rb')}
-        data = {'email': email, 'pswd': password, 'hep-cli': True}
-        if sandbox is True:
-            if recid is None:
-                resilient_requests('post', SITE_URL + '/record/sandbox/consume', data=data, files=files)
-                print('Uploaded ' + path_to_file + ' to a new record at ' + SITE_URL + '/record/sandbox')
-            else:
-                resilient_requests('post', SITE_URL + '/record/sandbox/' + str(recid) + '/consume', data=data, files=files)
-                print('Uploaded ' + path_to_file + ' to ' + SITE_URL + '/record/sandbox/' + str(recid))
+        data = {'email': email, 'recid': recid, 'invitation_cookie': invitation_cookie, 'sandbox': sandbox, 'pswd': password}
+        resilient_requests('post', SITE_URL + '/record/cli_upload', data=data, files=files)
+        # print upload location
+        if sandbox is True and recid is None:
+            print('Uploaded ' + path_to_file + ' to a new record at ' + SITE_URL + '/record/sandbox')
+        elif sandbox is True and recid is not None:
+            print('Uploaded ' + path_to_file + ' to ' + SITE_URL + '/record/sandbox/' + str(recid))
         else:
-            assert recid is not None, "Record ID must be supplied for non-sandbox submission."
-            assert invitation_cookie is not None, "Invitation cookie must be supplied for non-sandbox submission."
-            data['invitation_cookie'] = invitation_cookie
-            resilient_requests('post', SITE_URL + '/record/' + str(recid) + '/consume', data=data, files=files)
             print('Uploaded ' + path_to_file + ' to ' + SITE_URL + '/record/' + str(recid))
 
     def _build_urls(self, id_list, file_format, ids, table_name):
