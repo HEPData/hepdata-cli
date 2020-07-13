@@ -169,6 +169,7 @@ def download_url(url, download_dir):
     if url[-4:] == 'json':
         filename = 'HEPData-' + url.split('/')[-1].split("?")[0] + ".json"
     else:
+        print(response.headers.get('content-disposition'))
         filename = getFilename_fromCd(response.headers.get('content-disposition'))
     if filename[0] == '"' and filename[-1] == '"':
         filename = filename[1:-1]

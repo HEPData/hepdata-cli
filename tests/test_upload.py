@@ -4,7 +4,6 @@ import pytest
 import os
 import requests
 import requests_mock
-import getpass
 
 from click.testing import CliRunner
 
