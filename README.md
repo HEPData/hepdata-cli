@@ -49,7 +49,7 @@ $ hepdata-cli [-v/--version, --help]
 $ hepdata-cli [--verbose] find [QUERY] [-kw/--keyword KEYWORD] [-i/--ids IDTYPE]
 $ hepdata-cli [--verbose] download [IDS] [-f/--file-format FORMAT] [-i/--ids IDTYPE] [-t/--table-name TABLE-NAME] [-d/--download-dir DOWNLOAD-DIR]
 $ hepdata-cli [--verbose] fetch-names [IDS] [-i/--ids IDTYPE]
-$ hepdata-cli [--verbose] upload [PATH-TO-FILE-ARCHIVE] [-e/--email YOUR-EMAIL] [-r/--recid RECORD-ID] [-i/--invitation-cookie COOKIE] [-s/--sandbox TRUE/FALSE] 
+$ hepdata-cli [--verbose] upload [PATH-TO-FILE-ARCHIVE] [-e/--email YOUR-EMAIL] [-r/--recid RECORD-ID] [-i/--invitation-cookie COOKIE] [-s/--sandbox TRUE/FALSE] [-p/--password PASSWORD]
 ```
 
 The command ```find``` searches the [HEPData](https://www.hepdata.net/) database for matches of ```QUERY```. The advanced search syntax from the website can be used.
@@ -81,6 +81,9 @@ This can be found in the Uploader invitation email received at the beginning of 
 
 The argument ```[-s/--sandbox TRUE/FALSE]``` is a boolean to decide whether to upload to the sandbox or not.
 
+The argument ```[-p/--password PASSWORD``` is the password for the uploader's HEPData account (prompt if not specified).
+Warning: do not store your password unencrypted in any code intended for shared use.
+
 The ```hepdata-cli download/fetch-names``` and ```hepdata-cli find``` commands can be concatenated, if a ```IDTYPE``` is specified for ```find```.
 It is also possible to concatenate ```arxiv download```, form [pypi/arxiv-cli](https://pypi.org/project/arxiv-cli/), with ```hepdata-cli find```, if ```arxiv``` is used as ```IDTYPE```.
 
@@ -94,7 +97,7 @@ client = Client(verbose=True)
 client.find(query, keyword, ids)
 client.download(id_list, file_format, ids, table_name, download_dir)
 client.fetch_names(id_list, ids)
-client.upload(path_to_file, email, recid, invitation_cookie, sandbox)
+client.upload(path_to_file, email, recid, invitation_cookie, sandbox, password)
 
 ```
 
@@ -214,7 +217,9 @@ or equivalently
 client.upload('/path/to/TestHEPSubmission.tar.gz', email='my@email.com', sandbox=True)
 ```
 
-the uploaded submission can then be found from your [sandbox](https://www.hepdata.net/record/sandbox).
+The uploaded submission can then be found from your [sandbox](https://www.hepdata.net/record/sandbox).
+You will be prompted for the password associated with your HEPData account.
+If your account was created with CERN or ORCID authentication, you will first need to [set a password](https://www.hepdata.net/lost-password/).
 
 ### Example 8 - replace a record in the sandbox:
 
@@ -228,7 +233,7 @@ or equivalently
 client.upload('/path/to/TestHEPSubmission.tar.gz', email='my@email.com', recid='1234567890', sandbox=True)
 ```
 
-Note that you must have uploaded the original sandbox record yourself.
+Note that you must have uploaded the original sandbox record yourself and that you will be prompted for a password.
 
 ### Example 9 - upload a non-sandbox record:
 
@@ -245,3 +250,6 @@ client.upload('/path/to/TestHEPSubmission.tar.gz', email='my@email.com', recid='
 The uploaded submission can then be found from your [Dashboard](https://www.hepdata.net/dashboard/).
 The invitation cookie is sent in your original invitation email.
 You must have already claimed permissions by clicking the link in that email or from your [Dashboard](https://www.hepdata.net/dashboard/).
+Again, you will be prompted for a password, which must be [set](https://www.hepdata.net/lost-password/) if using CERN/ORCID login.
+The password can alternatively be passed as an argument to the CLI (```-p PASSWORD```) or API (```password=PASSWORD```).
+However, please be careful to keep your password secure, for example, by defining an encrypted environment variable for a CI/CD workflow.

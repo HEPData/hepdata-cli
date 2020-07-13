@@ -117,6 +117,7 @@ class Client(object):
         :recid: HEPData ID (not the INSPIRE ID) of an existing record.
         :invitation_cookie: token sent in the invitation email for a non-sandbox record.
         :sandbox: True (default) or False if the file should be uploaded to the sandbox.
+        :password: password of existing HEPData user (prompt if not specified).
         """
         files = {'hep_archive': open(path_to_file, 'rb')}
         data = {'email': email, 'recid': recid, 'invitation_cookie': invitation_cookie, 'sandbox': sandbox, 'pswd': password}
