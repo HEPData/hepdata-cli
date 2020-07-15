@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""CLI and API to allow users to search and download from HEPData"""
+"""CLI and API to allow users to search, download from and upload to HEPData"""
 
 import os
 
