@@ -44,3 +44,16 @@ def download(client, id_list, file_format, ids, table_name, download_dir):
 def fetch_names(client, id_list, ids):
     """CLI interface to API client.fetch_names function."""
     click.echo(client.fetch_names(id_list, ids=ids))
+
+
+@cli.command()
+@click.argument('path_to_file', required=True, type=str)
+@click.option('-e', '--email', required=True, type=str, help='User email.')
+@click.option('-r', '--recid', default=None, type=str, help='Record ID (if updating already existing record).')
+@click.option('-i', '--invitation-cookie', default=None, type=str, help='Invitation cookie (if NOT uploading to sandbox).')
+@click.option('-s', '--sandbox', default=True, type=bool, help='Whether to upload to the sandbox or not.')
+@click.option('--password', '-p', prompt=True, hide_input=True, help='User password (prompt if not specified).')
+@click.pass_obj
+def upload(client, path_to_file, email, recid, invitation_cookie, sandbox, password):
+    """CLI interface to API client.upload function."""
+    client.upload(path_to_file, email, recid, invitation_cookie, sandbox, password)

@@ -12,7 +12,7 @@ before_install:
   - travis_retry pip install --upgrade pip setuptools wheel coveralls
 
 install:
-  - travis_retry pip install -e .[tests]
+  - travis_retry pip install -I -e .[tests]
 
 script:
   - pytest --cov=hepdata_cli

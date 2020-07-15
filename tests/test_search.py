@@ -12,6 +12,7 @@ from hepdata_cli.cli import cli
 
 test_find_arguments = [
     ('reactions:"P P--> LQ LQ X"', None, None),
+    ('reactions:"P P --> gamma gamma"', None, None),
     ('reactions:"P P--> LQ LQ"', 'year', None),
     ('reactions:"P P--> LQ LQ"', 'arxiv', None),
     ('reactions:"P P--> LQ LQ"', None, 'arxiv'),

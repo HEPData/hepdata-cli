@@ -21,7 +21,7 @@ test_fetch_names_arguments = [
 @pytest.mark.parametrize("id_list, ids", test_fetch_names_arguments)
 def test_api_fetch_names(id_list, ids):
     client = Client(verbose=True)
-    lnames = client.fetch_names(id_list, ids)
+    lnames = client.fetch_names(" ".join(id_list), ids)
     assert(type(lnames) is list)
     if len(lnames) > 0:
         assert(all(type(names) is list for names in lnames))

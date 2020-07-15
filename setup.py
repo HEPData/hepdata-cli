@@ -16,11 +16,13 @@ with open(os.path.join('hepdata_cli', 'version.py'), 'rt') as fp:
 install_requirements = [
     'click',
     'requests',
+    'future',
 ]
 
 test_requirements = [
     'pytest',
     'pytest-cov',
+    'requests_mock',
 ]
 
 extras_require = {
