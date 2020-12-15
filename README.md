@@ -1,4 +1,4 @@
-[![Travis Status](https://www.travis-ci.org/HEPData/hepdata-cli.svg?branch=master)](https://www.travis-ci.org/HEPData/hepdata-cli)
+[![GitHub Actions Status](https://github.com/HEPData/hepdata-cli/workflows/Continuous%20Integration/badge.svg?branch=master)](https://github.com/HEPData/hepdata-cli/actions?query=branch%3Amaster)
 [![Coveralls Status](https://coveralls.io/repos/github/HEPData/hepdata-cli/badge.svg?branch=master)](https://coveralls.io/github/HEPData/hepdata-cli?branch=master)
 [![License](https://img.shields.io/github/license/HEPData/hepdata-cli.svg)](https://github.com/HEPData/hepdata-cli/blob/master/LICENSE.txt)
 [![GitHub Releases](https://img.shields.io/github/release/hepdata/hepdata-cli.svg?maxAge=2592000)](https://github.com/HEPData/hepdata-cli/releases)
