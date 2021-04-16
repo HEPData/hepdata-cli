@@ -23,6 +23,15 @@ $ pip install --user hepdata-cli
 $ hepdata-cli --help
 ```
 
+With Python 3 (<3.7), if the `LANG` environment variable is not set, you might get an error like:
+
+```
+RuntimeError: Click will abort further execution because Python 3 was configured to use ASCII as encoding for the environment. Consult https://click.palletsprojects.com/python3/ for mitigation steps.
+```
+
+In this case, you will need to export a Unicode locale as described in the
+[Click documentation](https://click.palletsprojects.com/en/7.x/python3/#python-3-surrogate-handling).
+
 ## Installation (for developers)
 
 Install from GitHub in a [virtual environment](https://docs.python.org/3/tutorial/venv.html):
