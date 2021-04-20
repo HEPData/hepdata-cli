@@ -12,6 +12,7 @@ import errno
 SITE_URL = "https://www.hepdata.net"
 # SITE_URL = "http://127.0.0.1:5000"
 
+UPLOAD_MAX_SIZE = 52000000  # Upload limit in bytes
 
 MAX_MATCHES, MATCHES_PER_PAGE = (10000, 10) if "pytest" not in sys.modules else (144, 12)
 
@@ -119,6 +120,9 @@ class Client(object):
         :sandbox: True (default) or False if the file should be uploaded to the sandbox.
         :password: password of existing HEPData user (prompt if not specified).
         """
+        file_size = os.path.getsize(path_to_file)
+        assert file_size < UPLOAD_MAX_SIZE,\
+            '{} too large ({} bytes > {} bytes)'.format(path_to_file, file_size, UPLOAD_MAX_SIZE)
         files = {'hep_archive': open(path_to_file, 'rb')}
         data = {'email': email, 'recid': recid, 'invitation_cookie': invitation_cookie, 'sandbox': sandbox, 'pswd': password}
         resilient_requests('post', SITE_URL + '/record/cli_upload', data=data, files=files)
