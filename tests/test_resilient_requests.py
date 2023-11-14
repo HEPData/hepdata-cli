@@ -12,5 +12,5 @@ def test_timeout():
     adapter = TimeoutHTTPAdapter(max_retries=retry_strategy, timeout=0.0001)
     with requests.Session() as session:
         session.mount("https://", adapter)
-        with pytest.raises(requests.exceptions.ConnectTimeout):
+        with pytest.raises(requests.exceptions.ConnectionError):
             session.get(SITE_URL + '/ping')

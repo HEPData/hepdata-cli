@@ -41,7 +41,7 @@ $ git clone https://github.com/HEPData/hepdata-cli.git
 $ cd hepdata-cli
 $ python3 -m venv ~/venv/hepdata-cli
 $ source ~/venv/hepdata-cli/bin/activate
-(hepdata-cli) $ pip install -e .[tests]
+(hepdata-cli) $ pip install -e '.[tests]'
 (hepdata-cli) $ hepdata-cli --help
 (hepdata-cli) $ pytest --cov=hepdata_cli
 ```
