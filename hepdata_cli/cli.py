@@ -27,7 +27,7 @@ def find(client, query, keyword, ids):
 
 @cli.command()
 @click.argument('id_list', nargs=-1, required=True, type=str)
-@click.option('-f', '--file-format', required=True, type=str, help='Specify file format (csv, root, yaml, yoda, or json) to be downloaded.')
+@click.option('-f', '--file-format', required=True, type=str, help='Specify file format (csv, root, yaml, yoda, yoda1, or json) to be downloaded.')
 @click.option('-i', '--ids', required=True, type=str, help='Specify which ids (hepdata or inspire) are given.')
 @click.option('-t', '--table-name', default='', type=str, help='Specify table to be downloaded.')
 @click.option('-d', '--download-dir', default='./hepdata-downloads', type=str, help='Specify where to download the files.')

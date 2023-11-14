@@ -1,6 +1,6 @@
-[![GitHub Actions Status](https://github.com/HEPData/hepdata-cli/workflows/Continuous%20Integration/badge.svg?branch=master)](https://github.com/HEPData/hepdata-cli/actions?query=branch%3Amaster)
-[![Coveralls Status](https://coveralls.io/repos/github/HEPData/hepdata-cli/badge.svg?branch=master)](https://coveralls.io/github/HEPData/hepdata-cli?branch=master)
-[![License](https://img.shields.io/github/license/HEPData/hepdata-cli.svg)](https://github.com/HEPData/hepdata-cli/blob/master/LICENSE.txt)
+[![GitHub Actions Status](https://github.com/HEPData/hepdata-cli/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/HEPData/hepdata-cli/actions?query=branch%3Amain)
+[![Coveralls Status](https://coveralls.io/repos/github/HEPData/hepdata-cli/badge.svg?branch=main)](https://coveralls.io/github/HEPData/hepdata-cli?branch=master)
+[![License](https://img.shields.io/github/license/HEPData/hepdata-cli.svg)](https://github.com/HEPData/hepdata-cli/blob/main/LICENSE.txt)
 [![GitHub Releases](https://img.shields.io/github/release/hepdata/hepdata-cli.svg?maxAge=2592000)](https://github.com/HEPData/hepdata-cli/releases)
 [![PyPI Version](https://img.shields.io/pypi/v/hepdata-cli)](https://pypi.org/project/hepdata-cli/)
 [![GitHub Issues](https://img.shields.io/github/issues/hepdata/hepdata-cli.svg?maxAge=2592000)](https://github.com/HEPData/hepdata-cli/issues)
@@ -74,11 +74,11 @@ An exact match of the keyword is first attempted, otherwise partial matches are 
 
 The argument ```[-i/--ids IDTYPE]``` accepts ```IDTYPE``` equal to ```arxiv```, ```hepdata``` or```inspire```.
 
-The argument  ```[-f/--file-format FORMAT]``` accepts ```FORMAT``` equal to ```csv```, ```root```, ```yaml```, ```yoda```, or ```json```.
+The argument  ```[-f/--file-format FORMAT]``` accepts ```FORMAT``` equal to ```csv```, ```root```, ```yaml```, ```yoda```, ```yoda1```, or ```json```.
 In the first four cases a .tar.gz archive is downloaded and unpacked as a directory, whereas in the last case a .json file is downloaded.
 
 The argument  ```[-t/--table-name TABLE-NAME]``` accepts a string giving the table name as input.
-In this case only the specified table is downloaded as a .csv, .root, .yaml, .yoda or .json file.
+In this case only the specified table is downloaded as a .csv, .root, .yaml, .yoda, .yoda1 or .json file.
 
 The argument ```[-d/--download-dir DOWNLOAD-DIR]``` specifies the directory to download the files.
 If not specified, the default download directory is ```./hepdata-downloads```.
