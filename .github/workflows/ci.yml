@@ -3,7 +3,7 @@ name: Continuous Integration
 on:
   push:
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
   release:
     types: [ published ]
     
@@ -11,26 +11,30 @@ jobs:
 
   test:
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
     strategy:
       matrix:
-        python-version: [ '2.7', '3.6', '3.7', '3.8' ]
+        runner: ['ubuntu-latest']
+        python-version: [ '3.7', '3.8', '3.9', '3.10', '3.11' ]
+        include:
+          - runner: 'ubuntu-20.04'
+            python-version: '3.6'
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install pip dependencies
       run: |
         pip install --upgrade pip setuptools coveralls
-        pip install -I -e .[tests]
+        pip install -e '.[tests]'
     - name: Run tests
       run: |
         pytest --cov=hepdata_cli
     - name: Run coveralls
-      if: startsWith(matrix.python-version, '3.8')
+      if: startsWith(matrix.python-version, '3.11')
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         COVERALLS_SERVICE_NAME: github
@@ -41,18 +45,20 @@ jobs:
     needs: test
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/hepdata-cli
+    permissions:
+      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v2
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
       with:
-        python-version: '3.8'
+        python-version: '3.11'
     - name: Build PyPI package
       run: |
         pip install wheel
         python setup.py sdist bdist_wheel
     - name: Publish distribution to PyPI
-      uses: pypa/gh-action-pypi-publish@master
-      with:
-        user: __token__
-        password: ${{ secrets.PYPI_PASSWORD }}
+      uses: pypa/gh-action-pypi-publish@release/v1

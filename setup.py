@@ -45,6 +45,7 @@ setup(
     install_requires=install_requirements,
     tests_require=test_requirements,
     extras_require=extras_require,
+    python_requires='>=3.6',
     entry_points={
         'console_scripts': [
             'hepdata-cli = hepdata_cli.cli:cli',
