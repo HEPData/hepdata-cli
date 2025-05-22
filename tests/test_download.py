@@ -38,6 +38,7 @@ test_download_arguments = [
     (["1222326", "1694381", "1462258", "1309874"], "csv", "inspire", ''),
     (["61434"], "yaml", "hepdata", "Table1"),
     (["1762350"], "yoda", "inspire", "Number density and Sum p_T pT>0.15 GeV/c"),
+    (["2862529"], "yoda.h5", "inspire", "95% CL upper limit on XSEC times BF"),
 ]
 
 

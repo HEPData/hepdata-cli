@@ -74,11 +74,11 @@ An exact match of the keyword is first attempted, otherwise partial matches are 
 
 The argument ```[-i/--ids IDTYPE]``` accepts ```IDTYPE``` equal to ```arxiv```, ```hepdata``` or```inspire```.
 
-The argument  ```[-f/--file-format FORMAT]``` accepts ```FORMAT``` equal to ```csv```, ```root```, ```yaml```, ```yoda```, ```yoda1```, or ```json```.
+The argument  ```[-f/--file-format FORMAT]``` accepts ```FORMAT``` equal to ```csv```, ```root```, ```yaml```, ```yoda```, ```yoda1```, ```yoda.h5```, or ```json```.
 In the first four cases a .tar.gz archive is downloaded and unpacked as a directory, whereas in the last case a .json file is downloaded.
 
 The argument  ```[-t/--table-name TABLE-NAME]``` accepts a string giving the table name as input.
-In this case only the specified table is downloaded as a .csv, .root, .yaml, .yoda, .yoda1 or .json file.
+In this case only the specified table is downloaded as a .csv, .root, .yaml, .yoda, .yoda1, .yoda.h5, or .json file.
 
 The argument ```[-d/--download-dir DOWNLOAD-DIR]``` specifies the directory to download the files.
 If not specified, the default download directory is ```./hepdata-downloads```.

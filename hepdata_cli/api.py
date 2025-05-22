@@ -13,6 +13,7 @@ SITE_URL = "https://www.hepdata.net"
 # SITE_URL = "http://127.0.0.1:5000"
 
 UPLOAD_MAX_SIZE = 52000000  # Upload limit in bytes
+ALLOWED_FORMATS = ['csv', 'root', 'yaml', 'yoda', 'yoda1', 'yoda.h5', 'json']
 
 MAX_MATCHES, MATCHES_PER_PAGE = (10000, 10) if "pytest" not in sys.modules else (144, 12)
 
@@ -82,7 +83,7 @@ class Client(object):
         Downloads from the hepdata database the specified records.
 
         :param id_list: list of ids to download. These can be obtained by the find function.
-        :param file_format: accepts one of ('csv', 'root', 'yaml', 'yoda', 'yoda1', 'json'). Specifies the download file format.
+        :param file_format: accepts one of ('csv', 'root', 'yaml', 'yoda', 'yoda1', 'yoda.h5', 'json'). Specifies the download file format.
         :param ids: accepts one of ('inspire', 'hepdata'). It specifies what type of ids have been passed.
         :param table_name: restricts download to specific tables.
         :param download_dir: defaults to ./hepdata-downloads. Specifies where to download the files.
@@ -139,7 +140,7 @@ class Client(object):
         if type(id_list) not in (tuple, list):
             id_list = id_list.split()
         assert len(id_list) > 0, 'Ids are required.'
-        assert file_format in ['csv', 'root', 'yaml', 'yoda', 'yoda1', 'json'], "allowed formats are: csv, root, yaml, yoda, yoda1 and json."
+        assert file_format in ALLOWED_FORMATS, f"allowed formats are: {ALLOWED_FORMATS}"
         assert ids in ['inspire', 'hepdata'], "allowed ids are: inspire and hepdata."
         if table_name == '':
             params = {'format': file_format}
