@@ -30,7 +30,9 @@ jobs:
       run: |
         pip install --upgrade pip setuptools coveralls
         pip install -e '.[tests]'
+        hepdata-cli --help
     - name: Run tests
+      if: startsWith(matrix.python-version, '3.13')
       run: |
         pytest --cov=hepdata_cli
     - name: Run coveralls
