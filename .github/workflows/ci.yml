@@ -32,11 +32,11 @@ jobs:
         pip install -e '.[tests]'
         hepdata-cli --help
     - name: Run tests
-      if: startsWith(matrix.python-version, '3.13')
+      if: startsWith(matrix.python-version, '3.12')
       run: |
         pytest --cov=hepdata_cli
     - name: Run coveralls
-      if: startsWith(matrix.python-version, '3.13')
+      if: startsWith(matrix.python-version, '3.12')
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         COVERALLS_SERVICE_NAME: github
@@ -54,10 +54,10 @@ jobs:
       id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
     steps:
     - uses: actions/checkout@v5
-    - name: Set up Python 3.13
+    - name: Set up Python 3.12
       uses: actions/setup-python@v5
       with:
-        python-version: '3.13'
+        python-version: '3.12'
     - name: Build PyPI package
       run: |
         pip install wheel
