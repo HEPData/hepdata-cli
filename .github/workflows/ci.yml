@@ -15,26 +15,28 @@ jobs:
     strategy:
       matrix:
         runner: ['ubuntu-latest']
-        python-version: [ '3.7', '3.8', '3.9', '3.10', '3.11' ]
+        python-version: [ '3.8', '3.9', '3.10', '3.11', '3.12', '3.13' ]
         include:
-          - runner: 'ubuntu-20.04'
-            python-version: '3.6'
+          - runner: 'ubuntu-22.04'
+            python-version: '3.7'
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install pip dependencies
       run: |
         pip install --upgrade pip setuptools coveralls
         pip install -e '.[tests]'
+        hepdata-cli --help
     - name: Run tests
+      if: startsWith(matrix.python-version, '3.12')
       run: |
         pytest --cov=hepdata_cli
     - name: Run coveralls
-      if: startsWith(matrix.python-version, '3.11')
+      if: startsWith(matrix.python-version, '3.12')
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         COVERALLS_SERVICE_NAME: github
@@ -51,11 +53,11 @@ jobs:
     permissions:
       id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v4
+    - uses: actions/checkout@v5
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
       with:
-        python-version: '3.11'
+        python-version: '3.12'
     - name: Build PyPI package
       run: |
         pip install wheel
