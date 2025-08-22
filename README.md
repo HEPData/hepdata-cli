@@ -23,15 +23,6 @@ $ pip install --user hepdata-cli
 $ hepdata-cli --help
 ```
 
-With Python 3 (<3.7), if the `LANG` environment variable is not set, you might get an error like:
-
-```
-RuntimeError: Click will abort further execution because Python 3 was configured to use ASCII as encoding for the environment. Consult https://click.palletsprojects.com/python3/ for mitigation steps.
-```
-
-In this case, you will need to export a Unicode locale as described in the
-[Click documentation](https://click.palletsprojects.com/en/7.x/python3/#python-3-surrogate-handling).
-
 ## Installation (for developers)
 
 Install from GitHub in a [virtual environment](https://docs.python.org/3/tutorial/venv.html):
@@ -39,11 +30,11 @@ Install from GitHub in a [virtual environment](https://docs.python.org/3/tutoria
 ```code
 $ git clone https://github.com/HEPData/hepdata-cli.git
 $ cd hepdata-cli
-$ python3 -m venv ~/venv/hepdata-cli
-$ source ~/venv/hepdata-cli/bin/activate
-(hepdata-cli) $ pip install -e '.[tests]'
-(hepdata-cli) $ hepdata-cli --help
-(hepdata-cli) $ pytest --cov=hepdata_cli
+$ python3 -m venv venv
+$ source venv/bin/activate
+(venv) $ pip install -e '.[tests]'
+(venv) $ hepdata-cli --help
+(venv) $ pytest --cov=hepdata_cli
 ```
 
 ## Usage
@@ -75,7 +66,7 @@ An exact match of the keyword is first attempted, otherwise partial matches are 
 The argument ```[-i/--ids IDTYPE]``` accepts ```IDTYPE``` equal to ```arxiv```, ```hepdata``` or```inspire```.
 
 The argument  ```[-f/--file-format FORMAT]``` accepts ```FORMAT``` equal to ```csv```, ```root```, ```yaml```, ```yoda```, ```yoda1```, ```yoda.h5```, or ```json```.
-In the first four cases a .tar.gz archive is downloaded and unpacked as a directory, whereas in the last case a .json file is downloaded.
+In the first six cases a .tar.gz archive is downloaded and unpacked as a directory, whereas in the last case a .json file is downloaded.
 
 The argument  ```[-t/--table-name TABLE-NAME]``` accepts a string giving the table name as input.
 In this case only the specified table is downloaded as a .csv, .root, .yaml, .yoda, .yoda1, .yoda.h5, or .json file.
