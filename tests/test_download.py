@@ -43,12 +43,12 @@ test_api_download_arguments = [
 ]
 
 test_cli_download_arguments = [
-    (["1462258"], "json", "inspire", ''),
+    (["2862529"], "json", "inspire", ''),
     (["1222326", "1694381", "1462258", "1309874"], "root", "inspire", ''),
     (["61434"], "yaml", "hepdata", "Table2"),
     (["1762350"], "yoda1", "inspire", "Number density and Sum p_T pT>0.15 GeV/c"),
     (["2862529"], "yoda.h5", "inspire", "95% CL upper limit on BF"),
-    (["158153"], "yoda.h5", "hepdata", '')
+    (["61434"], "yoda.h5", "hepdata", '')
 ]
 
 

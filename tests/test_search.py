@@ -13,14 +13,14 @@ from hepdata_cli.cli import cli
 test_api_find_arguments = [
     ('reactions:"P P--> LQ LQ X"', None, None),
     ('reactions:"P P--> LQ LQ"', 'year', None),
-    ('reactions:"P P--> LQ LQ"', None, 'arxiv'),
+    ('phrases:(diffractive OR elastic)"', None, 'arxiv'),
     ('reactions:"P P"', None, 'hepdata'),
 ]
 
 test_cli_find_arguments = [
     ('reactions:"P P --> gamma gamma"', None, None),
-    ('reactions:"P P--> LQ LQ"', 'arxiv', None),
-    ('reactions:"P P--> LQ LQ"', None, 'hepdata'),
+    ('abstract:"baryon production"', 'arxiv', None),
+    ('observables:ASYM', None, 'hepdata'),
 ]
 
 # api test
