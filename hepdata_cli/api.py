@@ -146,7 +146,9 @@ class Client(object):
             params = {'format': file_format}
         else:
             params = {'format': file_format, 'table': table_name}
-        urls = [resilient_requests('get', SITE_URL + '/record/' + ('ins' if ids == 'inspire' else '') + id_entry, params=params).url for id_entry in id_list]
+        urls = [resilient_requests('get', SITE_URL + '/record/' + ('ins' if ids == 'inspire' else '') + id_entry, params=params).url.replace('%2525', '%25') for id_entry in id_list]
+        print('params = ', params)
+        print('urls = ', urls)
         return urls
 
     def _query(self, query, page, size):
