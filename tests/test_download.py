@@ -33,18 +33,28 @@ cleanup(test_download_dir)
 
 # arguments for testing
 
-test_download_arguments = [
+test_api_download_arguments = [
     (["73322"], "json", "hepdata", ''),
     (["1222326", "1694381", "1462258", "1309874"], "csv", "inspire", ''),
     (["61434"], "yaml", "hepdata", "Table1"),
     (["1762350"], "yoda", "inspire", "Number density and Sum p_T pT>0.15 GeV/c"),
     (["2862529"], "yoda.h5", "inspire", "95% CL upper limit on XSEC times BF"),
+    (["2862529"], "yoda.h5", "inspire", '')
+]
+
+test_cli_download_arguments = [
+    (["1462258"], "json", "inspire", ''),
+    (["1222326", "1694381", "1462258", "1309874"], "root", "inspire", ''),
+    (["61434"], "yaml", "hepdata", "Table2"),
+    (["1762350"], "yoda1", "inspire", "Number density and Sum p_T pT>0.15 GeV/c"),
+    (["2862529"], "yoda.h5", "inspire", "95% CL upper limit on BF"),
+    (["158153"], "yoda.h5", "hepdata", '')
 ]
 
 
 # api testing
 
-@pytest.mark.parametrize("id_list, file_format, ids, table", test_download_arguments)
+@pytest.mark.parametrize("id_list, file_format, ids, table", test_api_download_arguments)
 def test_api_download(id_list, file_format, ids, table):
     test_download_dir = './.pytest_downloads/'
     mkdir(test_download_dir)
@@ -57,7 +67,7 @@ def test_api_download(id_list, file_format, ids, table):
 
 # cli testing
 
-@pytest.mark.parametrize("id_list, file_format, ids, table", test_download_arguments)
+@pytest.mark.parametrize("id_list, file_format, ids, table", test_cli_download_arguments)
 def test_cli_download(id_list, file_format, ids, table):
     test_download_dir = './.pytest_downloads/'
     mkdir(test_download_dir)
