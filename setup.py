@@ -16,7 +16,6 @@ with open(os.path.join('hepdata_cli', 'version.py'), 'rt') as fp:
 install_requirements = [
     'click',
     'requests',
-    'future',
 ]
 
 test_requirements = [
@@ -43,7 +42,6 @@ setup(
     platforms='any',
     license='GPLv3',
     install_requires=install_requirements,
-    tests_require=test_requirements,
     extras_require=extras_require,
     python_requires='>=3.7',
     entry_points={
