@@ -57,8 +57,10 @@ def test_api_download(id_list, file_format, ids, table):
     mkdir(test_download_dir)
     assert len(os.listdir(test_download_dir)) == 0
     client = Client(verbose=True)
-    client.download(id_list, file_format, ids, table, test_download_dir)
+    path_map = client.download(id_list, file_format, ids, table, test_download_dir)
+    file_paths = [fp for fps in path_map.values() for fp in fps]
     assert len(os.listdir(test_download_dir)) > 0
+    assert all(os.path.exists(fp) for fp in file_paths)
     cleanup(test_download_dir)
 
 
