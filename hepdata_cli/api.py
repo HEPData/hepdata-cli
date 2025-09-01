@@ -200,14 +200,28 @@ def download_url(url, download_dir):
     mkdir(os.path.dirname(filepath))
     open(filepath, 'wb').write(response.content)
     if filepath.endswith("tar.gz") or filepath.endswith("tar"):
-        tar = tarfile.open(filepath, "r:gz" if filepath.endswith("tar.gz") else "r:")
-        tar.extractall(path=os.path.dirname(filepath))
-        for member in tar.getmembers():
-            if member.isfile():
-                extracted_path = os.path.join(os.path.dirname(filepath), member.name)
-                files_downloaded.append(extracted_path)
-        tar.close()
-        os.remove(filepath)
+        tar = None
+        try:
+            tar = tarfile.open(filepath, "r:gz" if filepath.endswith("tar.gz") else "r:")
+            extract_dir = os.path.abspath(os.path.dirname(filepath))
+            tar.extractall(path=os.path.dirname(filepath))
+            for member in tar.getmembers():
+                if member.isfile():
+                    extracted_path = os.path.join(os.path.dirname(filepath), member.name)
+                    abs_extracted_path = os.path.abspath(extracted_path)
+                    if abs_extracted_path.startswith(extract_dir + os.sep) and os.path.exists(abs_extracted_path):
+                        files_downloaded.append(abs_extracted_path)
+                    elif not abs_extracted_path.startswith(extract_dir + os.sep):
+                        raise ValueError(f"Attempted path traversal for file {member.name}")
+                    else:
+                        raise FileNotFoundError(f"Extracted file {member.name} not found")
+        except Exception as e:
+            raise Exception(f"Failed to extract {filepath}: {str(e)}")
+        finally:
+            if tar:
+                tar.close()
+            if os.path.exists(filepath):
+                os.remove(filepath)
     else:
         files_downloaded.append(filepath)
     return files_downloaded
