@@ -87,13 +87,19 @@ class Client(object):
         :param ids: accepts one of ('inspire', 'hepdata'). It specifies what type of ids have been passed.
         :param table_name: restricts download to specific tables.
         :param download_dir: defaults to ./hepdata-downloads. Specifies where to download the files.
+
+        :return: dictionary mapping id to list of downloaded files.
+        :rtype: dict[int, list[str]]
         """
 
-        urls = self._build_urls(id_list, file_format, ids, table_name)
-        for url in urls:
+        url_map = self._build_urls(id_list, file_format, ids, table_name)
+        file_map = {}
+        for record_id, url in url_map.items():
             if self.verbose is True:
                 print("Downloading: " + url)
-            download_url(url, download_dir)
+            files_downloaded = download_url(url, download_dir)
+            file_map[record_id] = files_downloaded
+        return file_map
 
     def fetch_names(self, id_list, ids=None):
         """
@@ -102,9 +108,9 @@ class Client(object):
         :param id_list: list of id of records of which to return table names.
         :param ids: accepts one of ('inspire', 'hepdata'). It specifies what type of ids have been passed.
         """
-        urls = self._build_urls(id_list, 'json', ids, '')
+        url_map = self._build_urls(id_list, 'json', ids, '')
         table_names = []
-        for url in urls:
+        for url in url_map.values():
             response = resilient_requests('get', url)
             json_dict = response.json()
             table_names += [[data_table['name'] for data_table in json_dict['data_tables']]]
@@ -136,7 +142,16 @@ class Client(object):
             print('Uploaded ' + path_to_file + ' to ' + SITE_URL + '/record/' + str(recid))
 
     def _build_urls(self, id_list, file_format, ids, table_name):
-        """Builds urls for download and fetch_names, given the specified parameters."""
+        """
+        Builds urls for download and fetch_names, given the specified parameters.
+        
+        :param id_list: list of ids to download.
+        :param file_format: accepts one of ('csv', 'root', 'yaml', 'yoda', 'yoda1', 'yoda.h5', 'json').
+        :param ids: accepts one of ('inspire', 'hepdata').
+        :param table_name: restricts download to specific tables.
+        
+        :return: dictionary mapping id to url.
+        """
         if type(id_list) not in (tuple, list):
             id_list = id_list.split()
         assert len(id_list) > 0, 'Ids are required.'
@@ -146,9 +161,12 @@ class Client(object):
             params = {'format': file_format}
         else:
             params = {'format': file_format, 'table': table_name}
-        urls = [resilient_requests('get', SITE_URL + '/record/' + ('ins' if ids == 'inspire' else '') + id_entry, params=params).url.replace('%2525', '%25') for id_entry in id_list]
+        url_mapping = {}
+        for id_entry in id_list:
+            url = resilient_requests('get', SITE_URL + '/record/' + ('ins' if ids == 'inspire' else '') + id_entry, params=params).url.replace('%2525', '%25')
+            url_mapping[id_entry] = url
         # TODO: Investigate root cause of double URL encoding (https://github.com/HEPData/hepdata-cli/issues/8).
-        return urls
+        return url_mapping
 
     def _query(self, query, page, size):
         """Builds the search query passed to hepdata.net."""
@@ -170,6 +188,7 @@ def mkdir(directory):
 
 def download_url(url, download_dir):
     """Download file and if necessary extract it."""
+    files_downloaded = []
     assert is_downloadable(url), "Given url is not downloadable: {}".format(url)
     response = resilient_requests('get', url, allow_redirects=True)
     if url[-4:] == 'json':
@@ -182,10 +201,31 @@ def download_url(url, download_dir):
     mkdir(os.path.dirname(filepath))
     open(filepath, 'wb').write(response.content)
     if filepath.endswith("tar.gz") or filepath.endswith("tar"):
-        tar = tarfile.open(filepath, "r:gz" if filepath.endswith("tar.gz") else "r:")
-        tar.extractall(path=os.path.dirname(filepath))
-        tar.close()
-        os.remove(filepath)
+        tar = None
+        try:
+            tar = tarfile.open(filepath, "r:gz" if filepath.endswith("tar.gz") else "r:")
+            extract_dir = os.path.abspath(os.path.dirname(filepath))
+            tar.extractall(path=os.path.dirname(filepath))
+            for member in tar.getmembers():
+                if member.isfile():
+                    extracted_path = os.path.join(os.path.dirname(filepath), member.name)
+                    abs_extracted_path = os.path.abspath(extracted_path)
+                    if abs_extracted_path.startswith(extract_dir + os.sep) and os.path.exists(abs_extracted_path):
+                        files_downloaded.append(abs_extracted_path)
+                    elif not abs_extracted_path.startswith(extract_dir + os.sep):
+                        raise ValueError(f"Attempted path traversal for file {member.name}")
+                    else:
+                        raise FileNotFoundError(f"Extracted file {member.name} not found")
+        except Exception as e:
+            raise Exception(f"Failed to extract {filepath}: {str(e)}")
+        finally:
+            if tar:
+                tar.close()
+            if os.path.exists(filepath):
+                os.remove(filepath)
+    else:
+        files_downloaded.append(filepath)
+    return files_downloaded
 
 
 def getFilename_fromCd(cd):
