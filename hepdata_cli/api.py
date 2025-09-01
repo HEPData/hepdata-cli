@@ -89,15 +89,16 @@ class Client(object):
         :param download_dir: defaults to ./hepdata-downloads. Specifies where to download the files.
 
         :return: dictionary mapping id to list of downloaded files.
+        :rtype: dict[int, list[str]]
         """
 
         url_map = self._build_urls(id_list, file_format, ids, table_name)
         file_map = {}
-        for id, url in url_map.items():
+        for record_id, url in url_map.items():
             if self.verbose is True:
                 print("Downloading: " + url)
             files_downloaded = download_url(url, download_dir)
-            file_map[id] = files_downloaded
+            file_map[record_id] = files_downloaded
         return file_map
 
     def fetch_names(self, id_list, ids=None):
