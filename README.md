@@ -155,10 +155,11 @@ or equivalently
 
 ```python
 id_list = client.find('reactions:"P P--> LQ LQ"', ids='inspire')
-client.download(id_list, ids='inspire', file_format='csv')
+downloads = client.download(id_list, ids='inspire', file_format='csv')
+print(downloads)  # {'1222326': ['./hepdata-downloads/HEPData-ins1222326-v1-csv/Table1.csv', ...], ...}
 ```
 
-downloads four .tar.gz archives containing csv files and unpacks them in the default ```./hepdata-downloads``` directory.
+downloads four .tar.gz archives containing csv files and unpacks them in the default ```./hepdata-downloads``` directory. Using the API, a dictionary mapping ids to the downloaded files is returned.
 
 ### Example 5 - find table names in records:
 
