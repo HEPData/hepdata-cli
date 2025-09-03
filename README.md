@@ -12,7 +12,7 @@
 
 Command line interface (CLI) and application program interface (API) to allow users to search, download from and upload to [HEPData](https://www.hepdata.net).
 
-The code is compatible with both Python 2 and Python 3. Inspiration from [arxiv-cli](https://github.com/jacquerie/arxiv-cli).
+The code is compatible with Python 3.7 or greater. Inspiration from [arxiv-cli](https://github.com/jacquerie/arxiv-cli) (unmaintained since 2018).
 
 ## Installation (for users)
 
@@ -85,7 +85,6 @@ The argument ```[-p/--password PASSWORD``` is the password for the uploader's HE
 Warning: do not store your password unencrypted in any code intended for shared use.
 
 The ```hepdata-cli download/fetch-names``` and ```hepdata-cli find``` commands can be concatenated, if a ```IDTYPE``` is specified for ```find```.
-It is also possible to concatenate ```arxiv download```, form [pypi/arxiv-cli](https://pypi.org/project/arxiv-cli/), with ```hepdata-cli find```, if ```arxiv``` is used as ```IDTYPE```.
 
 ## API
 
@@ -106,13 +105,13 @@ client.upload(path_to_file, email, recid, invitation_cookie, sandbox, password)
 ### Example 1 - a plain search:
 
 ```code
-$ hepdata-cli --verbose find 'reactions:"P P--> LQ LQ X"'
+$ hepdata-cli --verbose find 'reactions:"P P --> LQ LQ X"'
 ```
 
 or equivalently
 
 ```python
-client.find('reactions:"P P--> LQ LQ X"')
+client.find('reactions:"P P --> LQ LQ X"')
 ```
 
 matches a single entry and returns full metadata dictionary.
@@ -120,13 +119,13 @@ matches a single entry and returns full metadata dictionary.
 ### Example 2 - search with keyword:
 
 ```code
-$ hepdata-cli --verbose find 'reactions:"P P--> LQ LQ"' -kw year
+$ hepdata-cli --verbose find 'reactions:"P P --> LQ LQ"' -kw year
 ```
 
 or equivalently
 
 ```python
-client.find('reactions:"P P--> LQ LQ"', keyword='year')
+client.find('reactions:"P P --> LQ LQ"', keyword='year')
 ```
 
 matches four entries and returns their publication years, as a dictionary.
@@ -134,13 +133,13 @@ matches four entries and returns their publication years, as a dictionary.
 ### Example 3 - search for ids of records:
 
 ```code
-$ hepdata-cli --verbose find 'reactions:"P P--> LQ LQ"' -i hepdata
+$ hepdata-cli --verbose find 'reactions:"P P --> LQ LQ"' -i hepdata
 ```
 
 or equivalently
 
 ```python
-client.find('reactions:"P P--> LQ LQ"', ids='hepdata')
+client.find('reactions:"P P --> LQ LQ"', ids='hepdata')
 ```
 
 matches four entries and returns their hepdata ids, as a plain list.
@@ -148,13 +147,13 @@ matches four entries and returns their hepdata ids, as a plain list.
 ### Example 4 - concatenate search with download using inspire ids:
 
 ```code
-$ hepdata-cli --verbose download $(hepdata-cli find 'reactions:"P P--> LQ LQ"' -i inspire) -i inspire -f csv
+$ hepdata-cli --verbose download $(hepdata-cli find 'reactions:"P P --> LQ LQ"' -i inspire) -i inspire -f csv
 ```
 
 or equivalently
 
 ```python
-id_list = client.find('reactions:"P P--> LQ LQ"', ids='inspire')
+id_list = client.find('reactions:"P P --> LQ LQ"', ids='inspire')
 downloads = client.download(id_list, ids='inspire', file_format='csv')
 print(downloads)  # {'1222326': ['./hepdata-downloads/HEPData-ins1222326-v1-csv/Table1.csv', ...], ...}
 ```
@@ -164,47 +163,42 @@ downloads four .tar.gz archives containing csv files and unpacks them in the def
 ### Example 5 - find table names in records:
 
 ```code
-$ hepdata-cli fetch-names $(hepdata-cli find 'reactions:"P P--> LQ LQ"' -i hepdata) -i hepdata
+$ hepdata-cli fetch-names $(hepdata-cli find 'reactions:"P P --> LQ LQ"' -i hepdata) -i hepdata
 ```
 
 or equivalently
 
 ```python
-id_list = client.find('reactions:"P P--> LQ LQ"', ids='hepdata')
+id_list = client.find('reactions:"P P --> LQ LQ"', ids='hepdata')
 client.fetch_names(id_list, ids='hepdata')
 ```
 
 returns all table names in the four matching records.
 
-### Example 6 - concatenate search with download from arxiv-cli:
+### Example 6 - combine search with download from arxiv:
 
-This example requires [arxiv-cli](https://github.com/jacquerie/arxiv-cli) to be installed, which is easily done via:
+This example requires [arxiv.py](https://github.com/lukasschwab/arxiv.py) to be installed, which is easily done via:
 
 ```code
-$ pip install --user arxiv-cli
+$ pip install --user arxiv
 ```
-
-Note that arxiv-cli installs an older version of [click](https://pypi.org/project/click/) which changes the CLI command
-in Example 5 above from ```fetch-names``` to ```fetch_names```.
 
 Then,
 
-```code
-$ arxiv download $(hepdata-cli find 'reactions:"P P--> LQ LQ"' -i arxiv)
-```
-
-or equivalently
-
 ```python
-import arxiv_cli
 import hepdata_cli
-arxiv_client = arxiv_cli.Client()
 hepdata_client = hepdata_cli.Client()
-id_list = hepdata_client.find('reactions:"P P--> LQ LQ"', ids='arxiv')
-arxiv_client.download(id_list)
+id_list = hepdata_client.find('reactions:"P P --> LQ LQ X"', ids='arxiv')
+id_list = id_list.split()
+print(id_list)  # ['1605.06035', '2101.11582', ...]
+
+import arxiv
+papers = arxiv.Client().results(arxiv.Search(id_list=id_list))
+for paper in papers:
+    paper.download_pdf()
 ```
 
-downloads two pdfs from the arXiv.
+downloads the PDF files from the arXiv.
 
 ### Example 7 - upload record to the sandbox:
 

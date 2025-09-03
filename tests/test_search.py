@@ -11,8 +11,8 @@ from hepdata_cli.cli import cli
 # arguments for testing
 
 test_api_find_arguments = [
-    ('reactions:"P P--> LQ LQ X"', None, None),
-    ('reactions:"P P--> LQ LQ"', 'year', None),
+    ('reactions:"P P --> LQ LQ X"', None, None),
+    ('reactions:"P P --> LQ LQ"', 'year', None),
     ('phrases:"(diffractive AND elastic)"', None, 'arxiv'),
 ]
 
