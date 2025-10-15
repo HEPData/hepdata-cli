@@ -86,7 +86,7 @@ class Client(object):
             elif format in (set, tuple):
                 return format(find_results)
             else:
-                raise TypeError(f"Cannot return results in specfied format: {format}. Allowed formats are: {str}, {list}.")
+                raise TypeError(f"Cannot return results in specfied format: {format}. Allowed formats are: {str}, {list}, {set}, {tuple}.")
 
     def download(self, id_list, file_format=None, ids=None, table_name='', download_dir='./hepdata-downloads'):
         """
