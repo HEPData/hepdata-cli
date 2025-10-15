@@ -41,7 +41,7 @@ class Client(object):
         :param ids: accepts one of ("arxiv", "inspire", "hepdata").
         :param max_matches: maximum number of matches to return. Default is 10,000.
         :param matches_per_page: number of matches per page. Default is 10.
-        :param format: specifies the return format if 'ids' is specified. Allowed formats are: str, list. Default is str.
+        :param format: specifies the return format if 'ids' is specified. Allowed formats are: str, list, set. Default is str.
 
         :return: returns a list of (filtered if 'keyword' is specified) dictionaries for the search matches. If 'ids' is specified it instead returns a list of ids in the format 'format'.
         """
@@ -83,6 +83,8 @@ class Client(object):
                 return ' '.join(find_results)
             elif format==list:
                 return find_results
+            elif format==set:
+                return set(find_results)
             else:
                 raise TypeError(f"Cannot return results in specfied format: {format}. Allowed formats are: {str}, {list}.")
 
