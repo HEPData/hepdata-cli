@@ -32,15 +32,18 @@ class Client(object):
         # check service availability
         resilient_requests('get', SITE_URL + '/ping')
 
-    def find(self, query, keyword=None, ids=None, max_matches=MAX_MATCHES, matches_per_page=MATCHES_PER_PAGE):
+    def find(self, query, keyword=None, ids=None, max_matches=MAX_MATCHES, matches_per_page=MATCHES_PER_PAGE, format=str):
         """
         Search function for the hepdata database. Calls hepdata.net search function.
 
         :param query: string passed to hepdata.net search function. See advanced search tips at hepdata.net.
         :param keyword: filters return dictionary for given keyword. Exact match is first attempted, otherwise partial match is accepted.
         :param ids: accepts one of ("arxiv", "inspire", "hepdata").
+        :param max_matches: maximum number of matches to return. Default is 10,000.
+        :param matches_per_page: number of matches per page. Default is 10.
+        :param format: specifies the return format if 'ids' is specified. Allowed formats are: str, list. Default is str.
 
-        :return: returns a list of (filtered if 'keyword' is specified) dictionaries for the search matches. If 'ids' is specified it instead returns a list of ids as a string.
+        :return: returns a list of (filtered if 'keyword' is specified) dictionaries for the search matches. If 'ids' is specified it instead returns a list of ids in the format 'format'.
         """
         find_results = []
         for counter in range(int(max_matches / matches_per_page)):
@@ -53,7 +56,7 @@ class Client(object):
                 # return full list of dictionary
                 find_results += data['results']
             else:
-                assert ids in [None, "arxiv", "inspire", "hepdata", "id"], "allowd ids are: arxiv, inspire and hepdata"
+                assert ids in [None, "arxiv", "inspire", "hepdata", "id"], "allowed ids are: arxiv, inspire and hepdata"
                 if ids is not None:
                     if ids == "hepdata":
                         ids = "id"
@@ -76,7 +79,12 @@ class Client(object):
         if ids is None:
             return find_results
         else:
-            return ' '.join(find_results)
+            if format==str:
+                return ' '.join(find_results)
+            elif format==list:
+                return find_results
+            else:
+                raise TypeError(f"Cannot return results in specfied format: {format}. Allowed formats are: {str}, {list}.")
 
     def download(self, id_list, file_format=None, ids=None, table_name='', download_dir='./hepdata-downloads'):
         """
