@@ -162,7 +162,7 @@ class Client(object):
         
         :return: dictionary mapping id to url.
         """
-        if type(id_list) not in (tuple, list, set):
+        if isinstance(id_list, str):
             id_list = id_list.split()
         assert len(id_list) > 0, 'Ids are required.'
         assert file_format in ALLOWED_FORMATS, f"allowed formats are: {ALLOWED_FORMATS}"
