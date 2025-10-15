@@ -38,11 +38,21 @@ cleanup(test_download_dir)
 
 test_api_download_arguments = [
     (["73322"], "json", "hepdata", ''),
-    (["1222326", "1694381", "1462258", "1309874"], "csv", "inspire", ''),
+    ("1222326 1694381 1462258 1309874", "csv", "inspire", ''), # str
+    (["1222326", "1694381", "1462258", "1309874"], "csv", "inspire", ''), # list
+    ({"1222326", "1694381", "1462258", "1309874"}, "csv", "inspire", ''), # set
+    (("1222326", "1694381", "1462258", "1309874"), "csv", "inspire", ''), # tuple
     (["61434"], "yaml", "hepdata", "Table1"),
     (["1762350"], "yoda", "inspire", "Number density and Sum p_T pT>0.15 GeV/c"),
     (["2862529"], "yoda.h5", "inspire", "95% CL upper limit on XSEC times BF"),
     (["2862529"], "yoda.h5", "inspire", '')
+]
+
+test_api_find_download_arguments = [
+    ("json", "hepdata", str),
+    ("csv",  "inspire", list),
+    ("json", "inspire", set),
+    ("csv",  "hepdata",   tuple),
 ]
 
 test_cli_download_arguments = [
@@ -54,18 +64,29 @@ test_cli_download_arguments = [
 
 # api testing
 
-@pytest.mark.parametrize("id_list, file_format, ids, table", test_api_download_arguments)
-def test_api_download(id_list, file_format, ids, table):
-    test_download_dir = './.pytest_downloads/'
-    mkdir(test_download_dir)
-    assert len(os.listdir(test_download_dir)) == 0
-    client = Client(verbose=True)
+def download_and_test(client, id_list, file_format, ids, table, test_download_dir):
     path_map = client.download(id_list, file_format, ids, table, test_download_dir)
     file_paths = [fp for fps in path_map.values() for fp in fps]
     assert len(os.listdir(test_download_dir)) > 0
     assert all(os.path.exists(fp) for fp in file_paths)
     cleanup(test_download_dir)
 
+@pytest.mark.parametrize("id_list, file_format, ids, table", test_api_download_arguments)
+def test_api_download(id_list, file_format, ids, table):
+    test_download_dir = './.pytest_downloads/'
+    mkdir(test_download_dir)
+    assert len(os.listdir(test_download_dir)) == 0
+    client = Client(verbose=True)
+    download_and_test(client, id_list, file_format, ids, table, test_download_dir)
+
+@pytest.mark.parametrize("file_format, ids, format", test_api_find_download_arguments)
+def test_api_find_download(file_format, ids, format):
+    test_download_dir = './.pytest_downloads/'
+    mkdir(test_download_dir)
+    assert len(os.listdir(test_download_dir)) == 0
+    client = Client(verbose=True)
+    id_list = client.find('reactions:"P P --> LQ LQ"', ids=ids, format=format)
+    download_and_test(client, id_list, file_format, ids, '', test_download_dir)
 
 # cli testing
 

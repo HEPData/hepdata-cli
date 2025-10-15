@@ -14,8 +14,9 @@ test_api_find_arguments = [
     ('reactions:"P P --> LQ LQ X"', None, None, None),
     ('reactions:"P P --> LQ LQ"', 'year', None, None),
     ('phrases:"(diffractive AND elastic)"', None, 'arxiv', str),
-    ('phrases:"(diffractive AND elastic)"', None, 'arxiv', list),
+    ('phrases:"(diffractive AND elastic)"', None, 'hepdata', list),
     ('reactions:"P P --> LQ LQ X"', None, 'arxiv', set),
+    ('reactions:"P P --> LQ LQ X"', None, 'inspire', tuple),
 ]
 
 test_cli_find_arguments = [

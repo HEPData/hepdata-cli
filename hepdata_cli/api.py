@@ -41,7 +41,7 @@ class Client(object):
         :param ids: accepts one of ("arxiv", "inspire", "hepdata").
         :param max_matches: maximum number of matches to return. Default is 10,000.
         :param matches_per_page: number of matches per page. Default is 10.
-        :param format: specifies the return format if 'ids' is specified. Allowed formats are: str, list, set. Default is str.
+        :param format: specifies the return format if 'ids' is specified. Allowed formats are: str, list, set, tuple. Default is str.
 
         :return: returns a list of (filtered if 'keyword' is specified) dictionaries for the search matches. If 'ids' is specified it instead returns a list of ids in the format 'format'.
         """
@@ -83,8 +83,8 @@ class Client(object):
                 return ' '.join(find_results)
             elif format==list:
                 return find_results
-            elif format==set:
-                return set(find_results)
+            elif format in (set, tuple):
+                return format(find_results)
             else:
                 raise TypeError(f"Cannot return results in specfied format: {format}. Allowed formats are: {str}, {list}.")
 
@@ -155,14 +155,14 @@ class Client(object):
         """
         Builds urls for download and fetch_names, given the specified parameters.
         
-        :param id_list: list of ids to download.
+        :param id_list: list of ids to download. Format is tuple, list, set or space-separated string.
         :param file_format: accepts one of ('csv', 'root', 'yaml', 'yoda', 'yoda1', 'yoda.h5', 'json').
         :param ids: accepts one of ('inspire', 'hepdata').
         :param table_name: restricts download to specific tables.
         
         :return: dictionary mapping id to url.
         """
-        if type(id_list) not in (tuple, list):
+        if type(id_list) not in (tuple, list, set):
             id_list = id_list.split()
         assert len(id_list) > 0, 'Ids are required.'
         assert file_format in ALLOWED_FORMATS, f"allowed formats are: {ALLOWED_FORMATS}"
