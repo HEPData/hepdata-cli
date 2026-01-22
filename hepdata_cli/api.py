@@ -79,7 +79,7 @@ class Client(object):
         if ids is None:
             return find_results
         else:
-            if format==str:
+            if format == str:
                 return ' '.join(find_results)
             elif format==list:
                 return find_results
