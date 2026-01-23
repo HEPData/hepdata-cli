@@ -4,7 +4,7 @@ import pytest
 
 from click.testing import CliRunner
 
-from hepdata_cli.api import Client, MAX_MATCHES, MATCHES_PER_PAGE
+from hepdata_cli.api import Client
 from hepdata_cli.cli import cli
 
 
@@ -17,6 +17,7 @@ test_api_find_arguments = [
     ('phrases:"(diffractive AND elastic)"', None, 'hepdata', list),
     ('reactions:"P P --> LQ LQ X"', None, 'arxiv', set),
     ('reactions:"P P --> LQ LQ X"', None, 'inspire', tuple),
+    ('reactions:"P P --> LQ LQ X"', None, 'inspire', int), # should raise TypeError
 ]
 
 test_cli_find_arguments = [
@@ -30,6 +31,12 @@ test_cli_find_arguments = [
 @pytest.mark.parametrize("query, keyword, ids, format", test_api_find_arguments)
 def test_api_find(query, keyword, ids, format):
     client = Client(verbose=True)
+
+    if format is int:
+        with pytest.raises(TypeError, match=f"Cannot return results in specified format: {format}."):
+            search_result = client.find(query, keyword, ids, format=format)
+        return
+
     search_result = client.find(query, keyword, ids, format=format)
     if ids is None:
         assert type(search_result) is list
