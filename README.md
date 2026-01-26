@@ -99,6 +99,8 @@ client.fetch_names(id_list, ids)
 client.upload(path_to_file, email, recid, invitation_cookie, sandbox, password)
 
 ```
+`client.find()` takes the keyword argument `format` to specify which format from `str`, `list`, `set`, or `tuple` shall be returned.
+Default is `str`.
 
 ## Examples
 
@@ -188,8 +190,7 @@ Then,
 ```python
 import hepdata_cli
 hepdata_client = hepdata_cli.Client()
-id_list = hepdata_client.find('reactions:"P P --> LQ LQ X"', ids='arxiv')
-id_list = id_list.split()
+id_list = hepdata_client.find('reactions:"P P --> LQ LQ X"', ids='arxiv', format=list)
 print(id_list)  # ['1605.06035', '2101.11582', ...]
 
 import arxiv
