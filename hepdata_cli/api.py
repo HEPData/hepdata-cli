@@ -10,7 +10,7 @@ import os
 import errno
 
 SITE_URL = "https://www.hepdata.net"
-# SITE_URL = "http://127.0.0.1:5000"
+# SITE_URL = "http://localhost:5000"
 
 UPLOAD_MAX_SIZE = 52000000  # Upload limit in bytes
 ALLOWED_FORMATS = ['csv', 'root', 'yaml', 'yoda', 'yoda1', 'yoda.h5', 'json']
