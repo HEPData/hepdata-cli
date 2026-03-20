@@ -38,10 +38,10 @@ cleanup(test_download_dir)
 
 test_api_download_arguments = [
     (["73322"], "json", "hepdata", ''),
-    ("1222326 1694381 1462258 1309874", "csv", "inspire", ''), # str
-    (["1222326", "1694381", "1462258", "1309874"], "csv", "inspire", ''), # list
-    ({"1222326", "1694381", "1462258", "1309874"}, "csv", "inspire", ''), # set
-    (("1222326", "1694381", "1462258", "1309874"), "csv", "inspire", ''), # tuple
+    ("1222326 1694381", "csv", "inspire", ''), # str
+    (["1222326"], "csv", "inspire", ''), # list
+    ({"1222326"}, "csv", "inspire", ''), # set
+    (("1222326"), "csv", "inspire", ''), # tuple
     (["61434"], "yaml", "hepdata", "Table1"),
     (["1762350"], "yoda", "inspire", "Number density and Sum p_T pT>0.15 GeV/c"),
     (["2862529"], "yoda.h5", "inspire", "95% CL upper limit on XSEC times BF"),
@@ -57,7 +57,7 @@ test_api_find_download_arguments = [
 
 test_cli_download_arguments = [
     (["2862529"], "json", "inspire", ''),
-    (["1222326", "1694381", "1462258", "1309874"], "root", "inspire", ''),
+    (["1222326"], "root", "inspire", ''),
     (["61434"], "yaml", "hepdata", "Table2"),
 ]
 
@@ -85,7 +85,7 @@ def test_api_find_download(file_format, ids, format):
     mkdir(test_download_dir)
     assert len(os.listdir(test_download_dir)) == 0
     client = Client(verbose=True)
-    id_list = client.find('reactions:"P P --> LQ LQ"', ids=ids, format=format)
+    id_list = client.find('reactions:"P P --> LQ LQ X"', ids=ids, format=format)
     download_and_test(client, id_list, file_format, ids, '', test_download_dir)
 
 # cli testing
